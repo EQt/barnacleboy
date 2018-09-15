@@ -1,0 +1,10 @@
+[package]
+name = "barnacleboy"
+version = "0.1.0"
+authors = ["Till Hartmann <till.hartmann@udo.edu>"]
+
+[dependencies]
+merfishtools = { git="https://github.com/merfishtools/merfishtools" }
+itertools = "0.7"
+image = "0.19"
+palette = "0.4"
