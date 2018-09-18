@@ -35,7 +35,7 @@ fn main() {
         .map(|r| (r.barcode_id, r))
         .into_group_map();
     for (key, group) in map.into_iter() {
-        let mut barcode_img = image::ImageBuffer::from_pixel(abs_width, abs_height, image::Rgba([0u8, 0u8, 0u8, 255u8]));
+        let mut barcode_img = image::ImageBuffer::new(abs_width, abs_height);
         for record in group {
             let [x, y] = record.abs_position;
             let [x, y] = [(x - min_x).floor() as u32, (y - min_y).floor() as u32];
@@ -49,10 +49,11 @@ fn main() {
             let mut pixel: &mut image::Rgba<u8> = img.get_pixel_mut(x as u32, y as u32);
             pixel.blend(&rgba);
 
-            let mut pixel: &mut image::Rgba<u8> = barcode_img.get_pixel_mut(x as u32, y as u32);
-            pixel.blend(&rgba);
+            let mut pixel: &mut image::LumaA<u8> = barcode_img.get_pixel_mut(x as u32, y as u32);
+            let grey = image::LumaA([0, (record.total_magnitude * 255.).floor() as u8]);
+            pixel.blend(&grey);
         }
-        image::ImageRgba8(image::imageops::rotate90(&barcode_img)).save(format!("img/barcode_{}.png", key)).unwrap();
+        image::ImageLumaA8(image::imageops::rotate90(&barcode_img)).save(format!("img/barcode_{}.png", key)).unwrap();
     }
     image::ImageRgba8(image::imageops::rotate90(&img)).save(format!("img/{}.png", "absolute")).unwrap();
 }
