@@ -13,8 +13,10 @@ use merfishtools::io::merfishdata::binary::Record;
 use std::collections::HashMap;
 
 fn main() {
+    // TODO use clap.g
     let args: Vec<String> = std::env::args().collect();
     let path = &args[1];
+
     // TODO: don't iterate twice.
     let mut reader = MReader::from_file(path).unwrap();
     let [[min_x, max_x], [min_y, max_y]] = reader.records().into_iter()
