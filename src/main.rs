@@ -53,6 +53,7 @@ fn main() {
             let grey = image::LumaA([255, (record.total_magnitude * 255.).floor() as u8]);
             pixel.blend(&grey);
         }
+        // We actually rotate the images 90° CW, so that width > height for better display properties.
         image::ImageLumaA8(image::imageops::rotate90(&barcode_img)).save(format!("img/barcode_{}.png", key)).unwrap();
     }
     image::ImageRgba8(image::imageops::rotate90(&img)).save(format!("img/{}.png", "absolute")).unwrap();
