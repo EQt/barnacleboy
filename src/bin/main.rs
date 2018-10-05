@@ -147,5 +147,5 @@ fn main() {
         // We actually rotate the images 90° CW, so that width > height for better display properties.
         img = image::imageops::rotate90(&img)
     }
-    image::ImageRgba8(img).save(format!("img/{}.png", "absolute")).unwrap();
+    image::ImageRgba8(img).save(image_path.join("all.png")).unwrap();
 }
