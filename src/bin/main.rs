@@ -26,6 +26,8 @@ struct Options {
     input: PathBuf,
     #[structopt(short = "b", long = "boundaries", parse(from_os_str))]
     boundaries: Option<PathBuf>,
+    #[structopt(short = "o", long = "out", parse(from_os_str), default_value = "img/")]
+    output: PathBuf,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -126,11 +128,12 @@ fn main() {
             // We actually rotate the images 90° CW, so that width > height for better display properties.
             barcode_img = image::imageops::rotate90(&barcode_img)
         }
-        let image_path = std::path::Path::new("img/");
+        let image_path = std::path::Path::new(&opt.output);
         if !image_path.exists() {
             std::fs::create_dir(&image_path).expect(&format!("Failed creating directory {:?}.", &image_path));
         }
-        image::ImageLumaA8(barcode_img).save(format!("img/barcode_{:03}.png", key)).unwrap();
+
+        image::ImageLumaA8(barcode_img).save(image_path.join(format!("barcode_{:03}.png", key))).unwrap();
     }
 
     if let Some(ref bounds) = cytoplasm_boundaries {
