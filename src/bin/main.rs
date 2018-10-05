@@ -112,7 +112,7 @@ fn main() {
             pixel.blend(&rgba);
 
             let mut pixel: &mut image::LumaA<u8> = barcode_img.get_pixel_mut(x as u32, y as u32);
-            let data = [255, (record.total_magnitude * 255.).floor() as u8];
+            let data = [255, 255u8.min(1u8.max((record.total_magnitude * 255.).floor() as u8))];
             let lumaa = image::LumaA(data);
             pixel.blend(&lumaa);
         }
