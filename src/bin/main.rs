@@ -56,6 +56,11 @@ fn main() {
     let opt = Options::from_args();
     let merfish_path = &opt.input;
 
+    let image_path = std::path::Path::new(&opt.output);
+    if !image_path.exists() {
+        std::fs::create_dir(&image_path).expect(&format!("Failed creating directory {:?}.", &image_path));
+    }
+
     // TODO: don't iterate twice.
     let mut reader = MReader::from_file(merfish_path).unwrap();
     let [[min_x, max_x], [min_y, max_y]] = reader.records().into_iter()
@@ -127,10 +132,6 @@ fn main() {
         if abs_height > abs_width {
             // We actually rotate the images 90° CW, so that width > height for better display properties.
             barcode_img = image::imageops::rotate90(&barcode_img)
-        }
-        let image_path = std::path::Path::new(&opt.output);
-        if !image_path.exists() {
-            std::fs::create_dir(&image_path).expect(&format!("Failed creating directory {:?}.", &image_path));
         }
 
         image::ImageLumaA8(barcode_img).save(image_path.join(format!("barcode_{:03}.png", key))).unwrap();
