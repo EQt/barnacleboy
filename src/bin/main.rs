@@ -2,6 +2,7 @@ extern crate image;
 extern crate itertools;
 extern crate merfishtools;
 extern crate palette;
+extern crate rayon;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -15,6 +16,7 @@ use merfishtools::io::merfishdata::binary::Reader as MReader;
 use merfishtools::io::merfishdata::binary::Record;
 use merfishtools::io::merfishdata::Reader;
 use palette::{Hsla, Srgba};
+use rayon::prelude::*;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -103,21 +105,12 @@ fn main() {
         .map(|r| r.unwrap())
         .map(|r| (r.barcode_id, r))
         .into_group_map();
-    for (key, group) in map.into_iter() {
+
+    map.par_iter().for_each(|(&key, ref group)| {
         let mut barcode_img = image::ImageBuffer::from_pixel(abs_width, abs_height, image::LumaA([0u8, 255u8]));
-        for record in group {
+        for record in group.iter() {
             let [x, y] = record.abs_position;
             let [x, y] = [(x - min_x).floor() as u32, (y - min_y).floor() as u32];
-
-//            let magnitude: u8 = (record.total_magnitude * 255.).floor() as u8;
-            let color = Hsla::new(((key as f32) / 140.) * 360., 1.0, 0.5, 0.75);
-            let color = Srgba::from(color);
-
-            let mut pixel: &mut image::Rgba<u8> = img.get_pixel_mut(x as u32, y as u32);
-            let data = [(color.color.red * 255.) as u8, (color.color.green * 255.) as u8, (color.color.blue * 255.) as u8, (color.alpha * 255.) as u8];
-            let rgba = image::Rgba(data);
-            pixel.blend(&rgba);
-
             let mut pixel: &mut image::LumaA<u8> = barcode_img.get_pixel_mut(x as u32, y as u32);
             let data = [255, 255u8.min(1u8.max((record.total_magnitude * 255.).floor() as u8))];
             let lumaa = image::LumaA(data);
@@ -135,8 +128,21 @@ fn main() {
         }
 
         image::ImageLumaA8(barcode_img).save(image_path.join(format!("barcode_{:03}.png", key))).unwrap();
-    }
+    });
 
+    map.iter().for_each(|(&key, ref group)| {
+        for record in group.iter() {
+            let [x, y] = record.abs_position;
+            let [x, y] = [(x - min_x).floor() as u32, (y - min_y).floor() as u32];
+//            let magnitude: u8 = (record.total_magnitude * 255.).floor() as u8;
+            let color = Hsla::new(((key as f32) / 140.) * 360., 1.0, 0.5, 0.75);
+            let color = Srgba::from(color);
+            let mut pixel: &mut image::Rgba<u8> = img.get_pixel_mut(x as u32, y as u32);
+            let data = [(color.color.red * 255.) as u8, (color.color.green * 255.) as u8, (color.color.blue * 255.) as u8, (color.alpha * 255.) as u8];
+            let rgba = image::Rgba(data);
+            pixel.blend(&rgba);
+        }
+    });
     if let Some(ref bounds) = cytoplasm_boundaries {
         draw_points(&mut img, &transparent_white_rgba, &bounds);
     }
