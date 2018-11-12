@@ -31,15 +31,6 @@ fn main() {
     let mut img = image::ImageBuffer::from_pixel(abs_width, abs_height, image::Rgba([0u8, 0u8, 0u8, 255u8]));
     println!("{}x{}", abs_width, abs_height);
 
-    let img_dir = std::path::Path::new("img");
-    if !img_dir.is_dir() {
-        if img_dir.is_file() {
-            panic!("img exists as a file (not directory!)");
-        } else {
-            std::fs::create_dir(&img_dir).unwrap();
-        }
-    }
-
     let mut reader = MReader::from_file(path).unwrap();
     let map: HashMap<u16, Vec<Record>> = reader.records().into_iter()
         .map(|r| r.unwrap())
