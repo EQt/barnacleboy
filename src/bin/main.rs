@@ -63,6 +63,7 @@ fn main() {
     }
 
     // TODO: don't iterate twice.
+    println!("reading {:?}", merfish_path);
     let mut reader = MReader::from_file(merfish_path).unwrap();
     let [[min_x, max_x], [min_y, max_y]] = reader.records().into_iter()
         .map(|r| r.unwrap())
@@ -80,6 +81,7 @@ fn main() {
     let mut nucleus_boundaries = None;
     // Get cell boundaries if available
     if let Some(cell_boundaries_path) = &opt.boundaries {
+        println!("reading cell boundaries {:?}", cell_boundaries_path);
         let f = std::fs::File::open(cell_boundaries_path).unwrap();
         let cell_boundaries: HashMap<String, Cell> = serde_pickle::from_reader(f).unwrap();
         // Skip virtual/non-existent cells (?) as well as non-cell boundaries
