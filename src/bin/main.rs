@@ -72,6 +72,9 @@ fn main() {
             [[acc[0][0].min(x), acc[0][1].max(x)],
                 [acc[1][0].min(y), acc[1][1].max(y)]]
         });
+    println!("x = {} {}", min_x, max_x);
+    println!("y = {} {}", min_y, max_y);
+
     let abs_width = (max_x - min_x).abs().ceil() as u32;
     let abs_height = (max_y - min_y).abs().ceil() as u32;
     let mut img = image::ImageBuffer::from_pixel(abs_width, abs_height, image::Rgba([0u8, 0u8, 0u8, 255u8]));
