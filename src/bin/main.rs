@@ -9,7 +9,6 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_pickle;
-#[macro_use]
 extern crate structopt;
 
 use std::collections::HashMap;
@@ -102,6 +101,7 @@ fn main() {
     let mut nucleus_boundaries = None;
     // Get cell boundaries if available
     if let Some(cell_boundaries_path) = &opt.boundaries {
+        println!("reading cell boundaries {:?}", cell_boundaries_path);
         let f = std::fs::File::open(cell_boundaries_path).unwrap();
         let cell_boundaries: HashMap<String, Cell> = serde_pickle::from_reader(f).unwrap();
         // Skip virtual/non-existent cells (?) as well as non-cell boundaries
@@ -149,7 +149,7 @@ fn main() {
         image::ImageLumaA8(barcode_img).save(image_path.join(format!("barcode_{:03}.png", key))).unwrap();
     });
 
-    map.iter().enumerate().for_each(|(i, (&key, ref group))| {
+    map.iter().enumerate().for_each(|(i, (&_key, ref group))| {
         for record in group.iter() {
             let [x, y] = record.abs_position;
             let [x, y] = [(x - min_x).floor() as u32, (y - min_y).floor() as u32];
