@@ -105,8 +105,23 @@ if __name__ == '__main__':
         field = 'abs_position'
         coord = df[field]
         tri = Delaunay(coord)
-        edges = coord[tri.vertices[:, [0,1]]]
-        lc = LineCollection(edges, alpha=0.5, color='black')
+        idx = np.array([[0,1], [0, 2], [1, 2]])
+        edges = tri.vertices[:, idx]
+        if False:
+            edges = tri.vertices[100:103, idx]
+            plt.plot(*coord[edges.flatten()].T, '.')
+
+        assert len(edges.shape) == 3
+        assert edges.shape[2] == 2
+        edges = edges.reshape(edges.shape[0]*edges.shape[1], edges.shape[2])
+
+        edges.sort(axis=1)      # i < j
+        edges.sort(axis=0)      # sort by head node index
+        edges = edges[::2]      # exclude every second edge (duplicates)
+
+        line_coord = coord[edges].copy()
+        assert line_coord.shape[1:] == (2, 2)
+        lc = LineCollection(line_coord, alpha=0.5, color='black')
 
         for cdf in np.split(df, cell_idx[1:]):
             coord = cdf[field]
@@ -115,3 +130,8 @@ if __name__ == '__main__':
         ax.add_collection(lc)
         
     plt.show()
+
+
+def test_reshape():
+    a = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]], [[9, 10], [11, 12]]])
+    assert a.shape == (3, 2, 2)
