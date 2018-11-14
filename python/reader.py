@@ -69,7 +69,11 @@ def fread(io, typ, byteorder=sys.byteorder):
         raise NotImplementedError(f"Don't know how to read '{typ}'")
 
 
-def read_header(fname):
+def read_header(fname: str, check_file_size=True):
+    """
+    Read merfish binary header information.
+    Usually that are the first 439 bytes.
+    """
     with open(fname, 'rb') as io:
         header_version = fread(io, "uint8")
         assert header_version == 1
@@ -84,9 +88,12 @@ def read_header(fname):
     ctype = [s if s != 'single' else 'float' for s in ctype]
     descr = layout[::3]
     factor = [int(s.split(' ')[-1]) for s in layout[1::3]]
-    infos = (descr, factor, ctype)
-    sizeof_record = sizeof_struct(infos)
-    assert offset + sizeof_record * num_entries == sizeof_file(fname)
+    if check_file_size:
+        infos = (descr, factor, ctype)
+        sizeof_record = sizeof_struct(infos)
+        a = offset + sizeof_record * num_entries
+        b = sizeof_file(fname)
+        assert a == b, f"{a} != {b} in {fname}"
     return infos, offset
 
 
