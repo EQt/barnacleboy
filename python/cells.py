@@ -106,9 +106,11 @@ if __name__ == '__main__':
         coord = df[field]
         tri = Delaunay(coord)
         edges = coord[tri.vertices[:, [0,1]]]
-        lc = LineCollection(edges)
+        lc = LineCollection(edges, alpha=0.5, color='black')
 
-        plt.plot(coord, '.')
+        for cdf in np.split(df, cell_idx[1:]):
+            coord = cdf[field]
+            plt.plot(coord[:, 0], coord[:, 1], '.')
         ax = plt.gca()
         ax.add_collection(lc)
         
