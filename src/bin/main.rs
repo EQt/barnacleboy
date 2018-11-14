@@ -14,7 +14,7 @@ extern crate structopt;
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use bincode::deserialize_from;
+use bincode::deserialize;
 use image::Pixel;
 use itertools::Itertools;
 use memmap::Mmap;
@@ -83,7 +83,7 @@ fn main() {
     let header_start = reader.header().header_length() as usize + 10;
     let record_size = 194;
     let num_records = reader.header().num_entries() as usize;
-    let records: Vec<Record> = (0..num_records).map(|i| deserialize_from(&mmap[header_start + i * record_size..header_start + (i + 1) * record_size]).unwrap()).collect();
+    let records: Vec<Record> = (0..num_records).map(|i| deserialize(&mmap[header_start + i * record_size..header_start + (i + 1) * record_size]).unwrap()).collect();
     let [[min_x, max_x], [min_y, max_y]] = records.iter()
         .fold([[std::f32::MAX, std::f32::MIN], [std::f32::MAX, std::f32::MIN]], |acc, r| {
             let [x, y] = r.abs_position;
