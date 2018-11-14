@@ -55,8 +55,14 @@ if __name__ == '__main__':
     p.add_argument('-f', '--fname', type=str, default=_test_file_name())
     args = p.parse_args()
 
+    fname = basename(args.fname)
     df = load_cells(args.fname, args.cell)
     cell_idx = group_index(df['cellID'])
+    cell_ids = df['cellID'][cell_idx]
     if True:
-        for cdf in np.split(df, cell_idx[1:]):
-            print(cdf['cellID'][0])
+        for field in ['pixel_centroid']:
+            plt.figure(f"{fname}: '{field}' on cells {cell_ids}")
+            for cdf in np.split(df, cell_idx[1:]):
+                coord = cdf[field]
+                plt.plot(coord[:, 0], coord[:, 1], '.')
+    plt.show()
