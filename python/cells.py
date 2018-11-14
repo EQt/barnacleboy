@@ -58,6 +58,7 @@ if __name__ == '__main__':
     p.add_argument('-a', '--all-coords', action='store_true')
     p.add_argument('-c', '--convex', action='store_true')
     p.add_argument('-d', '--delaunay', action='store_true')
+    p.add_argument('-g', '--graph', action='store_true')
     args = p.parse_args()
 
     df = load_cells(args.fname, args.cell)
@@ -96,4 +97,19 @@ if __name__ == '__main__':
             plt.triplot(coord[:, 0], coord[:, 1], tri.simplices, alpha=0.5)
             plt.plot(coord[:, 0], coord[:, 1], '.')
 
+
+    if args.graph:
+        from scipy.spatial import Delaunay
+        from matplotlib.collections import LineCollection
+
+        field = 'abs_position'
+        coord = df[field]
+        tri = Delaunay(coord)
+        edges = coord[tri.vertices[:, [0,1]]]
+        lc = LineCollection(edges)
+
+        plt.plot(coord, '.')
+        ax = plt.gca()
+        ax.add_collection(lc)
+        
     plt.show()
