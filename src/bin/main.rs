@@ -1,5 +1,7 @@
+extern crate bincode;
 extern crate image;
 extern crate itertools;
+extern crate memmap;
 extern crate merfishtools;
 extern crate palette;
 extern crate rayon;
@@ -10,15 +12,18 @@ extern crate serde_pickle;
 #[macro_use]
 extern crate structopt;
 
+use std::collections::HashMap;
+use std::path::PathBuf;
+
+use bincode::deserialize_from;
 use image::Pixel;
 use itertools::Itertools;
+use memmap::Mmap;
 use merfishtools::io::merfishdata::binary::Reader as MReader;
 use merfishtools::io::merfishdata::binary::Record;
 use merfishtools::io::merfishdata::Reader;
 use palette::{Hsla, Srgba};
 use rayon::prelude::*;
-use std::collections::HashMap;
-use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -61,17 +66,33 @@ fn main() {
     let image_path = std::path::Path::new(&opt.output);
     if !image_path.exists() {
         std::fs::create_dir(&image_path).expect(&format!("Failed creating directory {:?}.", &image_path));
+    } else {
+        if !image_path.is_dir() {
+            panic!("{:?} is not a directory.", &image_path)
+        }
     }
 
-    // TODO: don't iterate twice.
+    let f = std::fs::File::open(&merfish_path).unwrap();
     let mut reader = MReader::from_file(merfish_path).unwrap();
-    let [[min_x, max_x], [min_y, max_y]] = reader.records().into_iter()
-        .map(|r| r.unwrap())
+    let mmap = unsafe { Mmap::map(&f).expect("failed to map the file") };
+
+    // Note that we cannot use size_of here
+    // `let header_start = reader.header().header_length() + std::mem::size_of::<Header>();`
+    // and
+    // `let record_size = std::mem::size_of::<Record>();`
+    // since size_of is not the sum of the field sizes but also includes padding bytes.
+    let header_start = reader.header().header_length() as usize + 10;
+    let record_size = 194;
+    let num_records = reader.header().num_entries() as usize;
+    let records: Vec<Record> = (0..num_records).map(|i| deserialize_from(&mmap[header_start + i * record_size..header_start + (i + 1) * record_size]).unwrap()).collect();
+    let [[min_x, max_x], [min_y, max_y]] = records.iter()
         .fold([[std::f32::MAX, std::f32::MIN], [std::f32::MAX, std::f32::MIN]], |acc, r| {
             let [x, y] = r.abs_position;
             [[acc[0][0].min(x), acc[0][1].max(x)],
                 [acc[1][0].min(y), acc[1][1].max(y)]]
         });
+    println!("{:?}", ((min_x, max_x), (min_y, max_y)));
+
     let abs_width = (max_x - min_x).abs().ceil() as u32;
     let abs_height = (max_y - min_y).abs().ceil() as u32;
     let mut img = image::ImageBuffer::from_pixel(abs_width, abs_height, image::Rgba([0u8, 0u8, 0u8, 255u8]));
@@ -100,9 +121,7 @@ fn main() {
     let transparent_white_lumaa = image::LumaA([255, 128]);
 
     // create plot for every single barcode
-    let mut reader = MReader::from_file(merfish_path).unwrap();
-    let map: HashMap<u16, Vec<Record>> = reader.records().into_iter()
-        .map(|r| r.unwrap())
+    let map: HashMap<u16, Vec<Record>> = records.into_iter()
         .map(|r| (r.barcode_id, r))
         .into_group_map();
 
@@ -130,12 +149,12 @@ fn main() {
         image::ImageLumaA8(barcode_img).save(image_path.join(format!("barcode_{:03}.png", key))).unwrap();
     });
 
-    map.iter().for_each(|(&key, ref group)| {
+    map.iter().enumerate().for_each(|(i, (&key, ref group))| {
         for record in group.iter() {
             let [x, y] = record.abs_position;
             let [x, y] = [(x - min_x).floor() as u32, (y - min_y).floor() as u32];
 //            let magnitude: u8 = (record.total_magnitude * 255.).floor() as u8;
-            let color = Hsla::new(((key as f32) / 140.) * 360., 1.0, 0.5, 0.75);
+            let color = Hsla::new(((i as f32) / 10.) * 360., 1.0, 0.5, 0.75);
             let color = Srgba::from(color);
             let mut pixel: &mut image::Rgba<u8> = img.get_pixel_mut(x as u32, y as u32);
             let data = [(color.color.red * 255.) as u8, (color.color.green * 255.) as u8, (color.color.blue * 255.) as u8, (color.alpha * 255.) as u8];
