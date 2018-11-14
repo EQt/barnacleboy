@@ -73,7 +73,7 @@ fn main() {
     }
 
     let f = std::fs::File::open(&merfish_path).unwrap();
-    let mut reader = MReader::from_file(merfish_path).unwrap();
+    let reader = MReader::from_file(merfish_path).unwrap();
     let mmap = unsafe { Mmap::map(&f).expect("failed to map the file") };
 
     // Note that we cannot use size_of here
