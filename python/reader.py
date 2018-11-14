@@ -90,7 +90,26 @@ class RecordDef:
         Currently, ie version 1 (November 2018), that is 194 bytes
         """
         return sum(f * sizeof_type(c) for d, f, c in self)
-        
+
+    def c_struct(self, out=sys.stdout, name="Record", indent=4, type_align=8):
+        """
+        Print a C struct definition to file `out`
+        (eg to generate a header to be used in C/C++ code).
+        """
+        def ctype(c):
+            if c.startswith('int') or c.startswith('uint'):
+                return c + '_t'
+            return c
+
+        print(f"struct {name}", file=out)
+        print("{", file=out)
+        for d, f, c in self:
+            print(" " * (indent-1),
+                  ctype(c).ljust(type_align),
+                  d + (f"[{f}]" if f > 1 else "") + ";",
+                  file=out)
+        print(f"}};   /* sizeof({name}) == {self.sizeof()} */", file=out)
+
 
 class Header:
     """Binary merfish header"""
@@ -128,27 +147,6 @@ def read_header(fname: str, check_file_size=True):
         b = sizeof_file(fname)
         assert a == b, f"{a} != {b} in {fname}"
     return h
-
-
-def print_struct(infos, out=sys.stdout, name="Record", indent=4,
-                 type_align=8):
-    """
-    Print a C struct definition to file `out`
-    (eg to generate a header to be used in C/C++ code).
-    """
-    def ctype(c):
-        if c.startswith('int') or c.startswith('uint'):
-            return c + '_t'
-        return c
-
-    print(f"struct {name}", file=out)
-    print("{", file=out)
-    for d, f, c in zip(*infos):
-        print(" " * (indent-1),
-              ctype(c).ljust(type_align),
-              d + (f"[{f}]" if f > 1 else "") + ";",
-              file=out)
-    print(f"}};   /* sizeof({name}) == {sizeof_struct(infos)} */", file=out)
 
 
 def load_merfish(fname: str):

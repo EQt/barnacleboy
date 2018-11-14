@@ -7,7 +7,7 @@ etc.
 """
 import numpy as np
 from os import path
-from reader import read_header, print_struct, load_merfish
+from reader import read_header, load_merfish
 
 
 def _test_file_name() -> str:
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     for fname in args.fname:
         if args.c_struct:
             header = read_header(fname)
-            # header.layout.c_struct()
+            header.layout.c_struct()
             break
         array = load_merfish(fname)
 
