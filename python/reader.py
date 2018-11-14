@@ -110,16 +110,22 @@ def sizeof_struct(infos):
     return sum(f * sizeof_type(c) for d, f, c in zip(*infos))
 
 
-def print_struct(infos, out=sys.stdout, name="Record", indent=4):
+def print_struct(infos, out=sys.stdout, name="Record", indent=4,
+                 type_align=8):
     """
-    Print a C struct definition
+    Print a C struct definition to file `out`
     (eg to generate a header to be used in C/C++ code).
     """
+    def ctype(c):
+        if c.startswith('int') or c.startswith('uint'):
+            return c + '_t'
+        return c
+
     print(f"struct {name}", file=out)
     print("{", file=out)
     for d, f, c in zip(*infos):
         print(" " * (indent-1),
-              c.ljust(7),
+              ctype(c).ljust(type_align),
               d + (f"[{f}]" if f > 1 else "") + ";",
               file=out)
     print(f"}};   /* sizeof({name}) == {sizeof_struct(infos)} */", file=out)
