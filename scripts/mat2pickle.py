@@ -4,10 +4,7 @@ import numpy as np
 import gzip
 import pickle
 import oct2py
-import os
 import click
-from pprint import pprint
-from collections import defaultdict
 
 
 def group_to_map(group: h5py.Group, map: dict):
