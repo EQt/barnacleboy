@@ -47,6 +47,19 @@ def load_cells(fname: str, cell_ids: List, verbose=True):
     return df
 
 
+def delaunay_graph(coord):
+    tri = Delaunay(coord)
+    idx = [[0, 1], [0, 2], [1, 2]]
+    edges = tri.vertices[:, idx]
+    assert len(edges.shape) == 3
+    assert edges.shape[2] == 2
+    edges = edges.reshape(edges.shape[0]*edges.shape[1], -1)
+
+    edges = edges[np.lexsort(edges.T)]
+    # edges = edges[::2]      # exclude every second edge (duplicates)
+    return edges
+
+
 if __name__ == '__main__':
     import argparse
     from os.path import basename
@@ -104,25 +117,13 @@ if __name__ == '__main__':
 
         field = 'abs_position'
         coord = df[field]
-        tri = Delaunay(coord)
-        idx = [[0, 1], [0, 2], [1, 2]]
-        edges = tri.vertices[:, idx]
-        if False:
-            edges = tri.vertices[100:103, idx]
-        plt.plot(*coord.T, '.')
-
-        assert len(edges.shape) == 3
-        assert edges.shape[2] == 2
-        edges = edges.reshape(edges.shape[0]*edges.shape[1], -1)
-
-        edges = edges[np.lexsort(edges.T)]
-        edges = edges[::2]      # exclude every second edge (duplicates)
-
+        edges = delaunay_graph(coord)
         line_coord = coord[edges]
         lc = LineCollection(line_coord, alpha=0.5, color='black')
 
-        # for cdf in np.split(df, cell_idx[1:]):
-        #     plt.plot(*cdf[field].T, '.')
+        for cdf in np.split(df, cell_idx[1:]):
+            plt.plot(*cdf[field].T, '.')
+
         ax = plt.gca()
         ax.add_collection(lc)
         
