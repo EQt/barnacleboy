@@ -3,14 +3,25 @@ import sys
 import numpy as np
 
 
-def sizeof_int(typ):
+def sizeof_int(typ: str) -> int:
+    """
+    >>> sizeof_int("uint32")
+    4
+
+    >>> sizeof_int("int8")
+    1
+    """
     n, = re.findall(r'\d+$', typ)
     n = int(n)
     assert n % 8 == 0
     return n // 8
 
 
-def sizeof_type(typ):
+def sizeof_type(typ: str) -> int:
+    """
+    >>> sizeof_type("double")
+    8
+    """
     sizes = {'single': 4,
              'float': 4,
              'double': 8,
@@ -22,10 +33,6 @@ def sizeof_type(typ):
     raise NotImplementedError(typ)
 
 
-def sizeof_struct(infos):
-    return sum(f * sizeof_type(c) for d, f, c in zip(*infos))
-
-
 def sizeof_file(fname: str):
     """
     Compute the size of a file located at `fname`
@@ -35,7 +42,10 @@ def sizeof_file(fname: str):
     return stat(fname).st_size
 
 
-def dtype_typ(c):
+def dtype_typ(c: str):
+    """
+    Create a corresponding np.dtype to `c`
+    """
     if c == 'float':
         return np.float32
     return eval('np.' + c)
@@ -80,14 +90,24 @@ def read_header(fname):
     return infos, offset
 
 
+def sizeof_struct(infos):
+    """
+    Size of a record/struct in memory.
+    Currently, ie version 1 (November 2018), that is 194 bytes
+    """
+    return sum(f * sizeof_type(c) for d, f, c in zip(*infos))
+
+
 def print_struct(infos, out=sys.stdout, name="Record"):
     """
+    Print a C struct definition
+    (eg to generate a header to be used in C/C++ code).
     """
     print(f"struct {name}", file=out)
     print("{", file=out)
     for d, f, c in zip(*infos):
         print("   ", c.ljust(7), d + (f"[{f}]" if f > 1 else "") + ";", file=out)
-    print(f"}};   // sizeof({name}) == {sizeof_struct(infos)}", file=out)
+    print(f"}};   /* sizeof({name}) == {sizeof_struct(infos)} */", file=out)
 
 
 def load_merfish(fname: str):
