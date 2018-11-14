@@ -26,10 +26,12 @@ def unique_elements(arr) -> List:
 
 
 def load_cells(fname: str, cell_ids: List, verbose=True):
+    from os.path import basename
+
     cell_ids = [int(i) for i in cell_ids]
 
     if verbose:
-        print(f"Analyzing {basename(fname)}")
+        print("Analyzing", basename(fname))
     df = load_merfish(fname)
 
     df_cell_ids = np.array(df["cellID"])
