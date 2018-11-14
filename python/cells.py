@@ -13,6 +13,18 @@ def is_sorted(arr):
     return all(np.diff(arr) >= 0)
 
 
+def group_index(arr) -> List:
+    """Assumption: idx is sorted!"""
+    diff = np.diff(arr.astype(int) if arr.dtype.kind == 'u' else arr)
+    idx, = np.where(diff > 0)
+    return [0] + (idx + 1).tolist()
+
+
+def unique_elements(arr) -> List:
+    """Assumes that arr is sorted"""
+    return arr[group_index(arr)]
+
+
 def load_cells(fname: str, cell_ids: List, verbose=True):
     cell_ids = [int(i) for i in cell_ids]
 
@@ -44,4 +56,7 @@ if __name__ == '__main__':
     args = p.parse_args()
 
     df = load_cells(args.fname, args.cell)
-    
+    cell_idx = group_index(df['cellID'])
+    if True:
+        for cdf in np.split(df, cell_idx[1:]):
+            print(cdf['cellID'][0])
