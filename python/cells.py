@@ -48,6 +48,13 @@ def load_cells(fname: str, cell_ids: List, verbose=True):
     return df
 
 
+def euclidean_edge_length(edges, coord):
+    ec = coord[edges]
+    dx = ec[:, 0, 0] - ec[:, 1, 0]
+    dy = ec[:, 0, 1] - ec[:, 1, 1]
+    return np.sqrt(dx**2 + dy**2)
+
+
 def delaunay_graph(coord):
     @njit(cache=True)
     def compute_edges(edges, indptr, indices):
