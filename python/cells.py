@@ -2,6 +2,8 @@
 Visualize some merfish cells.
 """
 import numpy as np
+import matplotlib.pyplot as plt
+from typing import List
 from reader import load_merfish
 
 
@@ -9,6 +11,26 @@ def is_sorted(arr):
     if arr.dtype.kind == 'u':
         all(np.diff(arr.astype(int)) >= 0)
     return all(np.diff(arr) >= 0)
+
+
+def load_cells(fname: str, cell_ids: List, verbose=True):
+    cell_ids = [int(i) for i in cell_ids]
+
+    if verbose:
+        print(f"Analyzing {basename(fname)}")
+    df = load_merfish(fname)
+
+    df_cell_ids = np.array(df["cellID"])
+    mask = df_cell_ids == cell_ids[0]
+    for i in cell_ids[1:]:
+        mask |= df_cell_ids == i
+    df = df[mask]
+    df.sort(order='cellID')
+    if True:
+        assert is_sorted(df['cellID'])
+    if verbose:
+        print(f"Selected {len(df)} points")
+    return df
 
 
 if __name__ == '__main__':
@@ -21,20 +43,5 @@ if __name__ == '__main__':
     p.add_argument('-f', '--fname', type=str, default=_test_file_name())
     args = p.parse_args()
 
-    fname = args.fname
-    cell_ids = [int(i) for i in args.cell]
-
-    print(f"Analyzing {basename(fname)}")
-    df = load_merfish(fname)
-
-    df_cell_ids = np.array(df["cellID"])
-    mask = df_cell_ids == cell_ids[0]
-    for i in cell_ids[1:]:
-        mask |= df_cell_ids == i
-    df = df[mask]
-    df.sort(order='cellID')
-    if True:
-        assert is_sorted(df['cellID'])
-    print(f"Selected {len(df)} points")
-
+    df = load_cells(args.fname, args.cell)
     
