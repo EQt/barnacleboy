@@ -4,7 +4,7 @@ Visualize some merfish cells.
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import List
-from reader import load_merfish
+from reader import load_merfish, read_header
 
 
 def is_sorted(arr):
@@ -55,12 +55,15 @@ if __name__ == '__main__':
     p.add_argument('-f', '--fname', type=str, default=_test_file_name())
     args = p.parse_args()
 
-    fname = basename(args.fname)
     df = load_cells(args.fname, args.cell)
+    layout = read_header(args.fname).layout
+
+    fname = basename(args.fname)
+    coord_fields = [f for f, i in zip(layout.fields, layout.lens) if i == 2]
     cell_idx = group_index(df['cellID'])
     cell_ids = df['cellID'][cell_idx]
     if True:
-        for field in ['pixel_centroid']:
+        for field in coord_fields:
             plt.figure(f"{fname}: '{field}' on cells {cell_ids}")
             for cdf in np.split(df, cell_idx[1:]):
                 coord = cdf[field]
