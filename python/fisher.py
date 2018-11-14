@@ -1,7 +1,6 @@
 """
 Extract header information from a Merfish binary file
 """
-from os import path
 import sys
 import re
 import numpy as np
@@ -30,7 +29,10 @@ def sizeof_struct(infos):
     return sum(f * sizeof_type(c) for d, f, c in zip(*infos))
 
 
-def sizeof_file(fname):
+def sizeof_file(fname: str):
+    """
+    Compute the size of a file located at `fname`
+    """
     from os import stat
 
     return stat(fname).st_size
@@ -48,7 +50,7 @@ def create_dtype(infos):
 
 def fread(io, typ):
     """
-    Read from (buffered) IO reader in the c type typ
+    Read from (buffered) IO reader in the c type typ, eg
     """
     if typ == "bool":
         return bool.from_bytes(io.read(1), sys.byteorder)
@@ -96,6 +98,7 @@ def load_merfish(fname):
 
 
 if __name__ == '__main__':
+    from os import path
     import argparse
 
     p = argparse.ArgumentParser(description=__doc__)
