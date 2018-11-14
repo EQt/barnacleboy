@@ -110,7 +110,7 @@ def sizeof_struct(infos):
     return sum(f * sizeof_type(c) for d, f, c in zip(*infos))
 
 
-def print_struct(infos, out=sys.stdout, name="Record"):
+def print_struct(infos, out=sys.stdout, name="Record", indent=4):
     """
     Print a C struct definition
     (eg to generate a header to be used in C/C++ code).
@@ -118,7 +118,10 @@ def print_struct(infos, out=sys.stdout, name="Record"):
     print(f"struct {name}", file=out)
     print("{", file=out)
     for d, f, c in zip(*infos):
-        print("   ", c.ljust(7), d + (f"[{f}]" if f > 1 else "") + ";", file=out)
+        print(" " * (indent-1),
+              c.ljust(7),
+              d + (f"[{f}]" if f > 1 else "") + ";",
+              file=out)
     print(f"}};   /* sizeof({name}) == {sizeof_struct(infos)} */", file=out)
 
 
