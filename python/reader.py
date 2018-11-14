@@ -6,6 +6,7 @@ Author: Elias Kuthe <elias.kuthe@udo.edu>
 import re
 import sys
 import numpy as np
+from typing import List
 
 
 def sizeof_int(typ: str) -> int:
@@ -74,6 +75,23 @@ def fread(io, typ, byteorder=sys.byteorder):
         raise NotImplementedError(f"Don't know how to read '{typ}'")
 
 
+class RecordDef:
+    """Layout definition of a merfish record"""
+    fields: List[str]
+    ctype: List[str]
+    lens: List[int]
+
+    def __iter__(self):
+        return iter(zip(self.fields, self.lens, self.ctype))
+
+    def sizeof(self) -> int:
+        """
+        Size of a record/struct in memory.
+        Currently, ie version 1 (November 2018), that is 194 bytes
+        """
+        return sum(f * sizeof_type(c) for d, f, c in self)
+        
+
 class Header:
     """Binary merfish header"""
     version: int = -1
@@ -81,6 +99,7 @@ class Header:
     num_entries: int = -1
     header_len: int = -1
     offset: int = -1
+    layout: RecordDef = RecordDef()
 
 
 def read_header(fname: str, check_file_size=True):
@@ -100,24 +119,15 @@ def read_header(fname: str, check_file_size=True):
         h.offset = io.tell()
     layout = layout_str.split(',')
     ctype = layout[2::3]
-    ctype = [s if s != 'single' else 'float' for s in ctype]
-    descr = layout[::3]
-    factor = [int(s.split(' ')[-1]) for s in layout[1::3]]
+    h.layout.ctype = [s if s != 'single' else 'float' for s in ctype]
+    h.layout.fields = layout[::3]
+    h.layout.lens = [int(s.split(' ')[-1]) for s in layout[1::3]]
     if check_file_size:
-        infos = (descr, factor, ctype)
-        sizeof_record = sizeof_struct(infos)
+        sizeof_record = h.layout.sizeof()
         a = h.offset + sizeof_record * h.num_entries
         b = sizeof_file(fname)
         assert a == b, f"{a} != {b} in {fname}"
-    return infos, h.offset
-
-
-def sizeof_struct(infos):
-    """
-    Size of a record/struct in memory.
-    Currently, ie version 1 (November 2018), that is 194 bytes
-    """
-    return sum(f * sizeof_type(c) for d, f, c in zip(*infos))
+    return h
 
 
 def print_struct(infos, out=sys.stdout, name="Record", indent=4,

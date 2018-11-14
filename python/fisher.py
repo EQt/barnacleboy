@@ -30,8 +30,8 @@ if __name__ == '__main__':
 
     for fname in args.fname:
         if args.c_struct:
-            infos, _ = read_header(fname)
-            print_struct(infos)
+            header = read_header(fname)
+            # header.layout.c_struct()
             break
         array = load_merfish(fname)
 
