@@ -49,14 +49,12 @@ def load_cells(fname: str, cell_ids: List, verbose=True):
 
 def delaunay_graph(coord):
     tri = Delaunay(coord)
-    idx = [[0, 1], [0, 2], [1, 2]]
-    edges = tri.vertices[:, idx]
-    assert len(edges.shape) == 3
-    assert edges.shape[2] == 2
-    edges = edges.reshape(edges.shape[0]*edges.shape[1], -1)
+    ntri = len(tri.neighbors)
 
-    edges = edges[np.lexsort(edges.T)]
-    # edges = edges[::2]      # exclude every second edge (duplicates)
+    mask = tri.neighbors < np.arange(ntri)[:, np.newaxis]
+
+    idx = [[0, 1], [1, 2], [2, 0]]
+    edges = tri.vertices[:, idx][mask]
     return edges
 
 
