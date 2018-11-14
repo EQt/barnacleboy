@@ -105,27 +105,26 @@ if __name__ == '__main__':
         field = 'abs_position'
         coord = df[field]
         tri = Delaunay(coord)
-        idx = np.array([[0,1], [0, 2], [1, 2]])
-        edges = tri.vertices[:, idx]
+        # idx = np.array([[0,1], [0, 2], [1, 2]])
+        idx = [[0, 1]]
+        edges = tri.vertices[:, 0:2]
         if False:
             edges = tri.vertices[100:103, idx]
             plt.plot(*coord[edges.flatten()].T, '.')
 
-        assert len(edges.shape) == 3
-        assert edges.shape[2] == 2
-        edges = edges.reshape(edges.shape[0]*edges.shape[1], edges.shape[2])
+        # assert len(edges.shape) == 3
+        # assert edges.shape[2] == 2
+        # edges = edges.reshape(edges.shape[0]*edges.shape[1], edges.shape[2])
 
-        edges.sort(axis=1)      # i < j
-        edges.sort(axis=0)      # sort by head node index
-        edges = edges[::2]      # exclude every second edge (duplicates)
+        # edges.sort(axis=1)      # i < j
+        # edges.sort(axis=0)      # sort by head node index
+        # edges = edges[::2]      # exclude every second edge (duplicates)
 
-        line_coord = coord[edges].copy()
-        assert line_coord.shape[1:] == (2, 2)
+        line_coord = coord[edges]
         lc = LineCollection(line_coord, alpha=0.5, color='black')
 
         for cdf in np.split(df, cell_idx[1:]):
-            coord = cdf[field]
-            plt.plot(coord[:, 0], coord[:, 1], '.')
+            plt.plot(*cdf[field].T, '.')
         ax = plt.gca()
         ax.add_collection(lc)
         
