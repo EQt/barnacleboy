@@ -55,19 +55,35 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('cell', nargs='*', default=["2", "3", "4"])
     p.add_argument('-f', '--fname', type=str, default=_test_file_name())
+    p.add_argument('-a', '--all-coords', action='store_true')
+    p.add_argument('-c', '--convex', action='store_true')
     args = p.parse_args()
 
     df = load_cells(args.fname, args.cell)
     layout = read_header(args.fname).layout
 
     fname = basename(args.fname)
-    coord_fields = [f for f, i in zip(layout.fields, layout.lens) if i == 2]
     cell_idx = group_index(df['cellID'])
     cell_ids = df['cellID'][cell_idx]
-    if True:
+
+    if args.all_coords:
+        coord_fields = [f for f, i in zip(layout.fields, layout.lens) if i == 2]
         for field in coord_fields:
             plt.figure(f"{fname}: '{field}' on cells {cell_ids}")
             for cdf in np.split(df, cell_idx[1:]):
                 coord = cdf[field]
                 plt.plot(coord[:, 0], coord[:, 1], '.')
+
+    if args.convex:
+        from scipy.spatial import ConvexHull
+
+        field = 'abs_position'
+        for cdf in np.split(df, cell_idx[1:]):
+            coord = cdf[field]
+            conv = ConvexHull(coord)
+            v = coord[conv.vertices]
+            plt.fill(v[:, 0], v[:, 1], alpha=0.5)
+            plt.plot(coord[:, 0], coord[:, 1], '.')
+
+
     plt.show()
