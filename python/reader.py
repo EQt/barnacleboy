@@ -1,3 +1,8 @@
+"""
+Read merfish binary file information
+
+Author: Elias Kuthe <elias.kuthe@udo.edu>
+"""
 import re
 import sys
 import numpy as np

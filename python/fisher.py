@@ -1,5 +1,9 @@
 """
-Extract header information from a Merfish binary file
+Play around with merfish binaries, ie
+compute some statistics,
+plot distributions,
+check assumptions,
+etc.
 """
 import numpy as np
 from os import path
