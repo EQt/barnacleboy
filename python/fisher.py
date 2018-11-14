@@ -1,110 +1,22 @@
 """
 Extract header information from a Merfish binary file
 """
-import sys
-import re
 import numpy as np
+from os import path
+from reader import read_header, print_struct, load_merfish
 
 
-def sizeof_int(typ):
-    n, = re.findall(r'\d+$', typ)
-    n = int(n)
-    assert n % 8 == 0
-    return n // 8
-
-
-def sizeof_type(typ):
-    sizes = {'single': 4,
-             'float': 4,
-             'double': 8,
-             'char': 1}
-    if typ in sizes:
-        return sizes[typ]
-    if 'int' in typ:
-        return sizeof_int(typ)
-    raise NotImplementedError(typ)
-
-
-def sizeof_struct(infos):
-    return sum(f * sizeof_type(c) for d, f, c in zip(*infos))
-
-
-def sizeof_file(fname: str):
-    """
-    Compute the size of a file located at `fname`
-    """
-    from os import stat
-
-    return stat(fname).st_size
-
-
-def dtype_typ(c):
-    if c == 'float':
-        return np.float32
-    return eval('np.' + c)
-
-
-def create_dtype(infos):
-    return np.dtype([(d, dtype_typ(c), f) for d, f, c in zip(*infos)])
-
-
-def fread(io, typ):
-    """
-    Read from (buffered) IO reader in the c type typ, eg
-    """
-    if typ == "bool":
-        return bool.from_bytes(io.read(1), sys.byteorder)
-    elif "int" in typ:
-        signed = typ[0] != "u"
-        size = sizeof_int(typ)
-        return int.from_bytes(io.read(size), sys.byteorder, signed=signed)
-    else:
-        raise NotImplementedError(f"Don't know how to read '{typ}'")
-
-
-def read_header(fname):
-    with open(fname, 'rb') as io:
-        header_version = fread(io, "uint8")
-        assert header_version == 1
-        is_corrupt = fread(io, "bool")
-        assert not is_corrupt
-        num_entries = fread(io, "uint32")
-        header_len = fread(io, "uint32")
-        layout_str = io.read(header_len).decode()
-        offset = io.tell()
-    layout = layout_str.split(',')
-    ctype = layout[2::3]
-    ctype = [s if s != 'single' else 'float' for s in ctype]
-    descr = layout[::3]
-    factor = [int(s.split(' ')[-1]) for s in layout[1::3]]
-    infos = (descr, factor, ctype)
-    sizeof_record = sizeof_struct(infos)
-    assert offset + sizeof_record * num_entries == sizeof_file(fname)
-    return infos, offset
-
-
-def print_struct(infos, out=sys.stdout, name="Record"):
-    print(f"struct {name}", file=out)
-    print("{", file=out)
-    for d, f, c in zip(*infos):
-        print("   ", c.ljust(7), d + (f"[{f}]" if f > 1 else "") + ";", file=out)
-    print(f"}};   // sizeof({name}) == {sizeof_struct(infos)}", file=out)
-
-
-def load_merfish(fname):
-    infos, offset = read_header(fname)
-    array = np.memmap(fname, offset=offset, dtype=create_dtype(infos))
-    return array
+def _test_file_name() -> str:
+    """File name to the test file (on my computer)"""
+    return path.join(path.dirname(__file__),
+                     "..", "..", "raw", "rep2", "assigned_blist.bin")
 
 
 if __name__ == '__main__':
-    from os import path
     import argparse
 
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('fname', nargs='*',
-                   default=[path.join(path.dirname(__file__),
-                                      "..", "..", "raw", "rep2", "assigned_blist.bin")])
+    p.add_argument('fname', nargs='*', default=[_test_file_name()])
     p.add_argument('-p', '--plot_hist', action='store_true')
     p.add_argument('-c', '--c_struct', action='store_true')
     p.add_argument('-s', '--stats', action='store_true')
