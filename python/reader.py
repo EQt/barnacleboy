@@ -57,10 +57,6 @@ def dtype_typ(c: str):
     return eval('np.' + c)
 
 
-def create_dtype(infos):
-    return np.dtype([(d, dtype_typ(c), f) for d, f, c in zip(*infos)])
-
-
 def fread(io, typ, byteorder=sys.byteorder):
     """
     Read from (buffered) IO reader in the c type typ, eg
@@ -110,6 +106,9 @@ class RecordDef:
                   file=out)
         print(f"}};   /* sizeof({name}) == {self.sizeof()} */", file=out)
 
+    def to_dtype(self):
+        return np.dtype([(d, dtype_typ(c), f) for d, f, c in self])
+
 
 class Header:
     """Binary merfish header"""
@@ -121,7 +120,7 @@ class Header:
     layout: RecordDef = RecordDef()
 
 
-def read_header(fname: str, check_file_size=True):
+def read_header(fname: str, check_file_size=True) -> Header:
     """
     Read merfish binary header information.
     Usually that are the first 439 bytes.
@@ -161,6 +160,6 @@ def load_merfish(fname: str):
     A full description of all columns can be obtained via
     `load_merfish("bla.bin").dtype.fields`.
     """
-    infos, offset = read_header(fname)
-    array = np.memmap(fname, offset=offset, dtype=create_dtype(infos))
+    h = read_header(fname)
+    array = np.memmap(fname, offset=h.offset, dtype=h.layout.to_dtype())
     return array
