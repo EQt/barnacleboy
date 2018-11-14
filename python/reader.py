@@ -74,20 +74,30 @@ def fread(io, typ, byteorder=sys.byteorder):
         raise NotImplementedError(f"Don't know how to read '{typ}'")
 
 
+class Header:
+    """Binary merfish header"""
+    version: int = -1
+    is_corrupt: bool = True
+    num_entries: int = -1
+    header_len: int = -1
+    offset: int = -1
+
+
 def read_header(fname: str, check_file_size=True):
     """
     Read merfish binary header information.
     Usually that are the first 439 bytes.
     """
+    h = Header()
     with open(fname, 'rb') as io:
-        header_version = fread(io, "uint8")
-        assert header_version == 1
-        is_corrupt = fread(io, "bool")
-        assert not is_corrupt
-        num_entries = fread(io, "uint32")
-        header_len = fread(io, "uint32")
-        layout_str = io.read(header_len).decode()
-        offset = io.tell()
+        h.version = fread(io, "uint8")
+        assert h.version == 1
+        h.is_corrupt = fread(io, "bool")
+        assert not h.is_corrupt
+        h.num_entries = fread(io, "uint32")
+        h.header_len = fread(io, "uint32")
+        layout_str = io.read(h.header_len).decode()
+        h.offset = io.tell()
     layout = layout_str.split(',')
     ctype = layout[2::3]
     ctype = [s if s != 'single' else 'float' for s in ctype]
@@ -96,10 +106,10 @@ def read_header(fname: str, check_file_size=True):
     if check_file_size:
         infos = (descr, factor, ctype)
         sizeof_record = sizeof_struct(infos)
-        a = offset + sizeof_record * num_entries
+        a = h.offset + sizeof_record * h.num_entries
         b = sizeof_file(fname)
         assert a == b, f"{a} != {b} in {fname}"
-    return infos, offset
+    return infos, h.offset
 
 
 def sizeof_struct(infos):
