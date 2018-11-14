@@ -44,7 +44,7 @@ def load_cells(fname: str, cell_ids: List, verbose=True):
     if True:
         assert is_sorted(df['cellID'])
     if verbose:
-        print(f"Selected {len(df)} points")
+        print(f"Selected {len(df):,d} points")
     return df
 
 
@@ -97,6 +97,7 @@ if __name__ == '__main__':
     args = p.parse_args()
 
     df = load_cells(args.fname, args.cell)
+    # df = load_merfish(args.fname)
     layout = read_header(args.fname).layout
 
     fname = basename(args.fname)
@@ -140,6 +141,15 @@ if __name__ == '__main__':
         field = 'abs_position'
         coord = df[field]
         edges = delaunay_graph(coord)
+        lens = euclidean_edge_length(edges, coord)
+        thres = lens.mean() + 0.5*lens.std()
+        edges = edges[lens <= thres]
+
+        print('Threshold distance', thres)
+        if False:
+            plt.hist(lens, log=True, bins=300)
+            plt.show()
+        print(f'Selected {len(edges):,d} edges')
         line_coord = coord[edges]
         lc = LineCollection(line_coord, alpha=0.5, color='black')
 
