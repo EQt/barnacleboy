@@ -57,6 +57,7 @@ if __name__ == '__main__':
     p.add_argument('-f', '--fname', type=str, default=_test_file_name())
     p.add_argument('-a', '--all-coords', action='store_true')
     p.add_argument('-c', '--convex', action='store_true')
+    p.add_argument('-d', '--delaunay', action='store_true')
     args = p.parse_args()
 
     df = load_cells(args.fname, args.cell)
@@ -85,5 +86,14 @@ if __name__ == '__main__':
             plt.fill(v[:, 0], v[:, 1], alpha=0.5)
             plt.plot(coord[:, 0], coord[:, 1], '.')
 
+    if args.delaunay:
+        from scipy.spatial import Delaunay
+
+        field = 'abs_position'
+        for cdf in np.split(df, cell_idx[1:]):
+            coord = cdf[field]
+            tri = Delaunay(coord)
+            plt.triplot(coord[:, 0], coord[:, 1], tri.simplices, alpha=0.5)
+            plt.plot(coord[:, 0], coord[:, 1], '.')
 
     plt.show()
