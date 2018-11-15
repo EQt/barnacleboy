@@ -48,3 +48,15 @@ def delaunay_graph(coord):
     edges = np.empty((m, 2), dtype=int)
     compute_edges(edges, indptr, indices)
     return edges
+
+
+def plot_edges(edges, coord, ax=None, **args):
+    from matplotlib.collections import LineCollection
+    import matplotlib.pyplot as plt
+
+    if ax is None:
+        ax = plt.gca()
+    line_coord = coord[edges]
+    lc = LineCollection(line_coord, **args)
+    ax.add_collection(lc)
+

@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import List
 from reader import load_merfish, read_header
-from graph import euclidean_edge_length, delaunay_graph
+from graph import euclidean_edge_length, delaunay_graph, plot_edges
 
 
 def is_sorted(arr):
@@ -116,14 +116,11 @@ if __name__ == '__main__':
             plt.hist(lens, log=True, bins=300)
             plt.show()
         print(f'Selected {len(edges):,d} edges')
-        line_coord = coord[edges]
-        lc = LineCollection(line_coord, alpha=0.5, color='black')
 
+        # plot
         for cdf in np.split(df, cell_idx[1:]):
             plt.plot(*cdf[field].T, '.')
-
-        ax = plt.gca()
-        ax.add_collection(lc)
+        plot_edges(edges, coord, alpha=0.5, color='black')
         
     plt.show()
 
