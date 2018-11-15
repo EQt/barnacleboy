@@ -63,15 +63,13 @@ if __name__ == '__main__':
     args = p.parse_args()
 
     df = load_cells(args.fname, args.cell)
-    # df = load_merfish(args.fname)
-    layout = read_header(args.fname).layout
-
     fname = basename(args.fname)
     cell_idx = group_index(df['cellID'])
     cell_ids = df['cellID'][cell_idx]
 
     if args.all_coords:
-        coord_fields = [f for f, i in zip(layout.fields, layout.lens) if i == 2]
+        lay = read_header(args.fname).layout
+        coord_fields = [f for f, i in zip(lay.fields, lay.lens) if i == 2]
         for field in coord_fields:
             plt.figure(f"{fname}: '{field}' on cells {cell_ids}")
             for cdf in np.split(df, cell_idx[1:]):
@@ -99,7 +97,6 @@ if __name__ == '__main__':
             plt.triplot(coord[:, 0], coord[:, 1], tri.simplices, alpha=0.5)
             plt.plot(coord[:, 0], coord[:, 1], '.')
 
-
     if args.graph:
         from scipy.spatial import Delaunay
         from matplotlib.collections import LineCollection
@@ -121,10 +118,5 @@ if __name__ == '__main__':
         for cdf in np.split(df, cell_idx[1:]):
             plt.plot(*cdf[field].T, '.')
         plot_edges(edges, coord, alpha=0.5, color='black')
-        
+
     plt.show()
-
-
-def test_reshape():
-    a = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]], [[9, 10], [11, 12]]])
-    assert a.shape == (3, 2, 2)
