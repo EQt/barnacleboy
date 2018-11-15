@@ -15,6 +15,17 @@ def fill_img(img, x, y, v):
         img[xi, yi] += v[i]
 
 
+def generate_colortable(name='Set1'):
+    """
+    See "Qualitative colormaps"
+    https://matplotlib.org/tutorials/colors/colormaps.html
+    """
+    cmap = plt.get_cmap(name)
+    ncolors = cmap.N
+    colortab = np.hstack([np.array(cmap.colors), np.ones((ncolors, 1))])
+    return colortab
+
+
 if __name__ == '__main__':
     import argparse
 
@@ -23,13 +34,11 @@ if __name__ == '__main__':
     p.add_argument('-p', '--microns-per-pixel', type=float, default=2)
     p.add_argument('-t', '--threshold-percentile', type=float, default=0.01)
     p.add_argument('-b', '--barcode', type=int, default=2)
+    p.add_argument('-a', '--alpha', type=float, default=0.25)
     args = p.parse_args()
 
     mpp = args.microns_per_pixel
     cut = args.threshold_percentile
-    cmap = plt.get_cmap('tab10')
-    ncolors = len(cmap.colors)
-    colortab = np.hstack([np.array(cmap.colors), np.ones((ncolors, 1))])
 
     for fname in args.fname:
         out = path.basename(fname) + '.png'
@@ -48,11 +57,12 @@ if __name__ == '__main__':
         x = ((coords[:, 0] - min_x) / mpp).astype(int)
         y = ((coords[:, 1] - min_y) / mpp).astype(int)
         v = np.minimum(a['total_magnitude'] / vmax, 1.0)
+
+        colortab = generate_colortable() * args.alpha
         cells = np.mod(a['cellID'], len(colortab))
-        color = np.array(cmap(0))[:, np.newaxis]
         v4 = colortab[cells]
         print(f'Filling image {width}x{height}')
-        img = np.zeros((width, height, 4), dtype=float)
+        img = np.zeros((width, height, v4.shape[-1]), dtype=float)
         fill_img(img, x, y, v4)
         img = np.minimum(img, 1.0)
         print(f'Saving to "{out}"')
