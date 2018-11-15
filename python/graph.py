@@ -36,7 +36,7 @@ def delaunay_graph(coord):
             if i < j:
                 edges[e, 0] = i
                 edges[e, 1] = j
-                e +=1
+                e += 1
 
     tri = Delaunay(coord)
     indptr, indices = tri.vertex_neighbor_vertices
@@ -59,4 +59,3 @@ def plot_edges(edges, coord, ax=None, **args):
     line_coord = coord[edges]
     lc = LineCollection(line_coord, **args)
     ax.add_collection(lc)
-
