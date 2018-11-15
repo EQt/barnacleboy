@@ -28,6 +28,8 @@ if __name__ == '__main__':
     mpp = args.microns_per_pixel
     cut = args.threshold_percentile
     cmap = plt.get_cmap('tab10')
+    ncolors = len(cmap.colors)
+    colortab = np.hstack([np.array(cmap.colors), np.ones((ncolors, 1))])
 
     for fname in args.fname:
         out = path.basename(fname) + '.png'
@@ -46,8 +48,9 @@ if __name__ == '__main__':
         x = ((coords[:, 0] - min_x) / mpp).astype(int)
         y = ((coords[:, 1] - min_y) / mpp).astype(int)
         v = np.minimum(a['total_magnitude'] / vmax, 1.0)
-        color = np.array(cmap(0))
-        v4 = (np.array([v, v, v, v]).T * color)
+        cells = np.mod(a['cellID'], len(colortab))
+        color = np.array(cmap(0))[:, np.newaxis]
+        v4 = colortab[cells]
         print(f'Filling image {width}x{height}')
         img = np.zeros((width, height, 4), dtype=float)
         fill_img(img, x, y, v4)
