@@ -1,11 +1,14 @@
 """
-Compute a graph in the Euclidean plain
+Graph related computations in the Euclidean plain
 """
 import numpy as np
 from numba import njit
 
 
 def euclidean_edge_length(edges, coord):
+    """
+    Result: array (shape `(m,)`)
+    """
     ec = coord[edges]
     dx = ec[:, 0, 0] - ec[:, 1, 0]
     dy = ec[:, 0, 1] - ec[:, 1, 1]
@@ -13,6 +16,12 @@ def euclidean_edge_length(edges, coord):
 
 
 def delaunay_graph(coord):
+    """
+    Compute the edges of a Delaunay triangulation of the points
+    given by `coord` (shape `nx2`).
+
+    Result: adjacency list (array of shape `mx2`)
+    """
     from scipy.spatial import Delaunay
 
     @njit(cache=True)
