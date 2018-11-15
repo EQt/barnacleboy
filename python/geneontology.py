@@ -35,6 +35,9 @@ def download_biomart(gene_ids):
 
 def select_genes(go_id, codes):
     restricted = df[df[columns.index('go_id')] == go_id]
+    print(restricted[columns.index('namespace_1003')].unique().tolist(),
+          file=sys.stderr)
+
     esn = columns.index('ensembl_transcript_id_version')
     restricted_genes = restricted[esn]
 
@@ -52,8 +55,11 @@ if __name__ == '__main__':
         download_biomart(gene_ids)
 
     df = pd.read_csv(out_path, sep='\t', header=None)
-    go_argmax = df[columns.index('go_id')].value_counts().nlargest(1).index[0]
-    assert 'GO:0005515' == go_argmax
-
-    g = select_genes(go_argmax, codes)
-    g.to_csv(sys.stdout)
+    for klargest in [1, 2, 3, 7]:
+        print()
+        go_argmax = df[columns.index('go_id')].\
+            value_counts().nlargest(klargest).index[-1]
+        print(go_argmax, file=sys.stderr)
+        print()
+        g = select_genes(go_argmax, codes)
+        g.to_csv(sys.stdout)
