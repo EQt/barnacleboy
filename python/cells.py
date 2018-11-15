@@ -4,7 +4,7 @@ Visualize some merfish cells.
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import List
-from reader import load_merfish, read_header
+from reader import load_merfish
 from graph import euclidean_edge_length, delaunay_graph, plot_edges
 
 
@@ -68,8 +68,8 @@ if __name__ == '__main__':
     cell_ids = df['cellID'][cell_idx]
 
     if args.all_coords:
-        lay = read_header(args.fname).layout
-        coord_fields = [f for f, i in zip(lay.fields, lay.lens) if i == 2]
+        coord_fields = [k for k, v in df.dtype.fields.items()
+                        if v[0].shape == (2,)]
         for field in coord_fields:
             plt.figure(f"{fname}: '{field}' on cells {cell_ids}")
             for cdf in np.split(df, cell_idx[1:]):

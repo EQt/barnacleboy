@@ -83,7 +83,8 @@ if __name__ == '__main__':
 
             plt.figure(f"{fname}: error_bit")
             plt.hist(array['error_bit'],
-                     log=True, density=True, rwidth=0.7, align='left', bins=range(0, 17))
+                     log=True, density=True, rwidth=0.7, align='left',
+                     bins=range(0, 17))
 
             plt.figure(f"{fname}: area")
             plt.hist(array['area'], log=True, density=True, bins=100)
@@ -111,7 +112,7 @@ if __name__ == '__main__':
                 plt.plot(a / b)
 
             if False:
-                for  cellID in [13, 42, 11, 9]:
+                for cellID in [13, 42, 11, 9]:
                     mask = array['cellID'] == cellID
                     print(f"cell {cellID} contains {mask.sum()} elements")
                     a = np.array(array['abs_position'][:, 0][mask], dtype=float)
