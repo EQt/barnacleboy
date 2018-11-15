@@ -1,0 +1,9 @@
+name: barnacleboy
+channels:
+  - defaults
+dependencies:
+  - matplotlib
+  - numpy
+  - numba
+  - scipy
+  - pyparsing
