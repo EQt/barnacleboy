@@ -14,7 +14,9 @@ if __name__ == '__main__':
 
     nuc = c1[c1['inNucleus'] == 1]
     cyt = c1[c1['inNucleus'] == 0]
+    center = c1['abs_position'].mean(axis=0)
 
     plt.plot(*nuc['abs_position'].T, 'r.')
     plt.plot(*cyt['abs_position'].T, 'b.')
+    plt.plot(*center.T, 'k.', markersize=30, alpha=0.1)
     plt.show()
