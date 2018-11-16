@@ -6,24 +6,7 @@ import matplotlib.pyplot as plt
 from typing import List
 from reader import load_merfish
 from graph import euclidean_edge_length, delaunay_graph, plot_edges
-
-
-def is_sorted(arr):
-    if arr.dtype.kind == 'u':
-        all(np.diff(arr.astype(int)) >= 0)
-    return all(np.diff(arr) >= 0)
-
-
-def group_index(arr) -> List:
-    """Assumption: idx is sorted!"""
-    diff = np.diff(arr.astype(int) if arr.dtype.kind == 'u' else arr)
-    idx, = np.where(diff > 0)
-    return [0] + (idx + 1).tolist()
-
-
-def unique_elements(arr) -> List:
-    """Assumes that arr is sorted"""
-    return arr[group_index(arr)]
+from utils import is_sorted, group_index
 
 
 def load_cells(fname: str, cell_ids: List, verbose=True):
