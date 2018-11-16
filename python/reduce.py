@@ -16,6 +16,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('-b', '--barcode-freq', action='store_true')
     p.add_argument('-g', '--show-graph', action='store_true')
+    p.add_argument('-C', '--cmap', type=str, default='plasma')
     args = p.parse_args()
 
     fname = _test_file_name()
@@ -61,10 +62,10 @@ if __name__ == '__main__':
     centers = np.fliplr(centers)
 
     if True:
-        for rank in [2, 5, 4]:
+        for rank in [2, 5, 4, 7, 10, 11]:
             bid = barcode_rank[-rank]
             plt.figure(f"barcode {bid} frequency (rank {rank})")
-            plt.scatter(*centers.T, c=gene_freq[:, bid], s=30, alpha=0.5)
+            plt.scatter(*centers.T, c=gene_freq[:, bid], s=30, alpha=0.5, cmap=args.cmap)
             plt.xlabel('x [µm]')
             plt.ylabel('y [µm]')
             plt.axis('equal')
