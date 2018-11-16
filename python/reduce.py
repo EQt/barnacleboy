@@ -24,12 +24,27 @@ if __name__ == '__main__':
     assert len(cell_idx) < 1e5
     print('[ok]')
 
-    if False:
-        assert is_sorted(df['cellID'])
+    def iter_cells(axis='abs_position'):
+        return np.split(a[axis], cell_idx[1:])
 
-    centers = np.array([
-        p.mean(axis=0) for p in np.split(a['abs_position'], cell_idx[1:])
-    ])
+    centers = np.array([p.mean(axis=0) for p in iter_cells()])
+    max_barcode = a['barcode_id'].max()+1
+    gene_freq = np.zeros((len(cell_idx), max_barcode))
+    for i, p in enumerate(iter_cells('barcode_id')):
+        gene_freq[i, :] = np.bincount(p, minlength=gene_freq.shape[1]) / len(p)
+
+    if True:
+        total_freq = gene_freq.mean(axis=0)
+        plt.figure("barcode frequencies")
+        plt.bar(range(len(total_freq)), total_freq)
+        plt.xlabel("barcode_id")
+        plt.ylabel("relative frequency")
+        plt.figure("sorted barcode frequencies")
+        total_freq.sort()
+        plt.bar(range(len(total_freq)), total_freq)
+        plt.xlabel("barcode_id")
+        plt.ylabel("relative frequency")
+
 
     # plt.plot(*a['abs_position'].T, '.', alpha=0.1)
     edges = delaunay_graph(centers)
@@ -39,6 +54,7 @@ if __name__ == '__main__':
     centers = np.fliplr(centers)
 
     if True:
+        plt.figure("graph")
         plt.plot(*centers.T, '.', color='orange')
         plot_edges(edges, centers)
         plt.axis('equal')
