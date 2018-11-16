@@ -1,7 +1,5 @@
 """
 Read merfish binary file information
-
-Author: Elias Kuthe <elias.kuthe@udo.edu>
 """
 import re
 import sys
@@ -163,3 +161,15 @@ def load_merfish(fname: str):
     h = read_header(fname)
     array = np.memmap(fname, offset=h.offset, dtype=h.layout.to_dtype())
     return array
+
+
+if __name__ == '__main__':
+    import argparse
+
+    p = argparse.ArgumentParser(description="Print header informations")
+    p.add_argument('fname', nargs='+')
+    args = p.parse_args()
+
+    for fname in args.fname:
+        h = read_header(fname, check_file_size=False)
+        print(f'num_entries  {h.num_entries:,d}')
