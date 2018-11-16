@@ -5,7 +5,7 @@ from typing import List
 def is_sorted(arr) -> bool:
     """Check whether an array is sorted"""
     if arr.dtype.kind == 'u':
-        all(np.diff(arr.astype(int)) >= 0)
+        return all(np.diff(arr.astype(int)) >= 0)
     return all(np.diff(arr) >= 0)
 
 
