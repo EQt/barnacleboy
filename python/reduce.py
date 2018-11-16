@@ -15,6 +15,7 @@ if __name__ == '__main__':
 
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('-b', '--barcode-freq', action='store_true')
+    p.add_argument('-g', '--show-graph', action='store_true')
     args = p.parse_args()
 
     fname = _test_file_name()
@@ -60,12 +61,16 @@ if __name__ == '__main__':
     centers = np.fliplr(centers)
 
     if True:
-        bid = barcode_rank[-5]
-        plt.figure(f"barcode {bid}")
-        plt.scatter(*centers.T, c=gene_freq[:, bid], s=30, alpha=0.5)
-        plt.axis('equal')
+        for rank in [2, 5, 4]:
+            bid = barcode_rank[-rank]
+            plt.figure(f"barcode {bid} frequency (rank {rank})")
+            plt.scatter(*centers.T, c=gene_freq[:, bid], s=30, alpha=0.5)
+            plt.xlabel('x [µm]')
+            plt.ylabel('y [µm]')
+            plt.axis('equal')
+            plt.colorbar()
 
-    if False:
+    if args.show_graph:
         plt.figure("graph")
         plt.plot(*centers.T, '.', color='orange')
         plot_edges(edges, centers)
