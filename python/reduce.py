@@ -11,6 +11,12 @@ from graph import delaunay_graph, plot_edges, euclidean_edge_length
 
 
 if __name__ == '__main__':
+    import argparse
+
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('-b', '--barcode-freq', action='store_true')
+    args = p.parse_args()
+
     fname = _test_file_name()
     df = load_merfish(fname)
     print('Loading', basename(fname), end=' ... ', flush=True)
@@ -32,16 +38,16 @@ if __name__ == '__main__':
     gene_freq = np.zeros((len(cell_idx), max_barcode))
     for i, p in enumerate(iter_cells('barcode_id')):
         gene_freq[i, :] = np.bincount(p, minlength=gene_freq.shape[1]) / len(p)
+    total_freq = gene_freq.mean(axis=0)
+    barcode_rank = np.argsort(total_freq)
 
-    if True:
-        total_freq = gene_freq.mean(axis=0)
+    if args.barcode_freq:
         plt.figure("barcode frequencies")
         plt.bar(range(len(total_freq)), total_freq)
         plt.xlabel("barcode_id")
         plt.ylabel("relative frequency")
         plt.figure("sorted barcode frequencies")
-        total_freq.sort()
-        plt.bar(range(len(total_freq)), total_freq)
+        plt.bar(range(len(total_freq)), total_freq[barcode_rank])
         plt.xlabel("barcode_id")
         plt.ylabel("relative frequency")
 
@@ -54,8 +60,15 @@ if __name__ == '__main__':
     centers = np.fliplr(centers)
 
     if True:
+        bid = barcode_rank[-5]
+        plt.figure(f"barcode {bid}")
+        plt.scatter(*centers.T, c=gene_freq[:, bid], s=30, alpha=0.5)
+        plt.axis('equal')
+
+    if False:
         plt.figure("graph")
         plt.plot(*centers.T, '.', color='orange')
         plot_edges(edges, centers)
         plt.axis('equal')
-        plt.show()
+
+    plt.show()
