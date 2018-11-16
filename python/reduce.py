@@ -14,12 +14,13 @@ if __name__ == '__main__':
     import argparse
 
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('fname', type=str, default=None, nargs='?')
     p.add_argument('-b', '--barcode-freq', action='store_true')
     p.add_argument('-g', '--show-graph', action='store_true')
     p.add_argument('-C', '--cmap', type=str, default='plasma')
     args = p.parse_args()
 
-    fname = _test_file_name()
+    fname = _test_file_name() if args.fname is None else args.fname
     df = load_merfish(fname)
     print('Loading', basename(fname), end=' ... ', flush=True)
     a = np.array(df[['barcode_id', 'cellID', 'abs_position', 'area']])
