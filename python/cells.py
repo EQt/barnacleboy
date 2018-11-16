@@ -3,6 +3,7 @@ Visualize some merfish cells.
 """
 import numpy as np
 import matplotlib.pyplot as plt
+from os.path import basename
 from typing import List
 from reader import load_merfish
 from graph import euclidean_edge_length, delaunay_graph, plot_edges
@@ -10,8 +11,6 @@ from utils import is_sorted, group_index
 
 
 def load_cells(fname: str, cell_ids: List, verbose=True):
-    from os.path import basename
-
     cell_ids = [int(i) for i in cell_ids]
 
     if verbose:
@@ -33,7 +32,6 @@ def load_cells(fname: str, cell_ids: List, verbose=True):
 
 if __name__ == '__main__':
     import argparse
-    from os.path import basename
     from fisher import _test_file_name
 
     p = argparse.ArgumentParser(description=__doc__)
