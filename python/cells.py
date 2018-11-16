@@ -82,7 +82,6 @@ if __name__ == '__main__':
 
     if args.graph:
         from scipy.spatial import Delaunay
-        from matplotlib.collections import LineCollection
 
         field = 'abs_position'
         coord = df[field]
