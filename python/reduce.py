@@ -22,7 +22,7 @@ if __name__ == '__main__':
     fname = _test_file_name()
     df = load_merfish(fname)
     print('Loading', basename(fname), end=' ... ', flush=True)
-    a = np.array(df[['barcode_id', 'cellID', 'abs_position']])
+    a = np.array(df[['barcode_id', 'cellID', 'abs_position', 'area']])
     print('[ok]')
 
     print('Sorting cells', end=' ... ', flush=True)
@@ -36,6 +36,7 @@ if __name__ == '__main__':
         return np.split(a[axis], cell_idx[1:])
 
     centers = np.array([p.mean(axis=0) for p in iter_cells()])
+    areas = np.array([p.sum() for p in iter_cells('area')])
     max_barcode = a['barcode_id'].max()+1
     gene_freq = np.zeros((len(cell_idx), max_barcode))
     for i, p in enumerate(iter_cells('barcode_id')):
@@ -65,7 +66,8 @@ if __name__ == '__main__':
         for rank in [2, 5, 4, 7, 10, 11]:
             bid = barcode_rank[-rank]
             plt.figure(f"barcode {bid} frequency (rank {rank})")
-            plt.scatter(*centers.T, c=gene_freq[:, bid], s=30, alpha=0.5, cmap=args.cmap)
+            plt.scatter(*centers.T, c=gene_freq[:, bid], alpha=0.5, s=0.025*areas,
+                        cmap=args.cmap)
             plt.xlabel('x [µm]')
             plt.ylabel('y [µm]')
             plt.axis('equal')
