@@ -11,3 +11,8 @@ def test_reshape():
 def test_is_sorted1():
     a = np.array([1, 2, 0], dtype=np.uint8)
     assert not is_sorted(a)
+
+
+def test_is_sorted2():
+    a = np.array([0, 2, 2], dtype=np.uint8)
+    assert is_sorted(a)
