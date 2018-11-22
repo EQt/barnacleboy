@@ -13,4 +13,5 @@ to their [paper](http://zhuang.harvard.edu/MERFISHData/data_for_release.zip).
 Comparison
 ---------
 
-https://github.com/Teichlab/SpatialDE
+[`SpatialDE`](https://github.com/Teichlab/SpatialDE)
+(refering to [this paper](http://science.sciencemag.org/content/sci/353/6294/78.full.pdf))
