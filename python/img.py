@@ -54,6 +54,7 @@ if __name__ == '__main__':
     p.add_argument('-t', '--threshold-percentile', type=float, default=0.01)
     p.add_argument('-b', '--barcode', type=int, default=2)
     p.add_argument('-a', '--alpha', type=float, default=0.25)
+    p.add_argument('-s', '--show', action='store_true')
     args = p.parse_args()
 
     mpp = args.microns_per_pixel
@@ -73,9 +74,15 @@ if __name__ == '__main__':
         colortab = generate_colortable() * args.alpha
         cells = np.mod(a['cellID'], len(colortab))
         v4 = colortab[cells]
+
         print(f'Filling image {width}x{height}')
         img = np.zeros((width, height, v4.shape[-1]), dtype=float)
         fill_img(img, x, y, v4)
         img = np.minimum(img, 1.0)
-        print(f'Saving to "{out}"')
-        plt.imsave(out, img, cmap='gray', vmin=0, vmax=1.0)
+
+        if args.show:
+            plt.imshow(img, interpolation='none')
+            plt.show()
+        else:
+            print(f'Saving to "{out}"')
+            plt.imsave(out, img, cmap='gray', vmin=0, vmax=1.0)
