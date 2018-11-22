@@ -23,6 +23,8 @@ if __name__ == '__main__':
 
     fname = _test_file_name() if args.fname is None else args.fname
     df = load_merfish(fname)
+    plot_ranks = [2, 5, 4, 7, 10, 11]:
+
     with Status('Loading ' + basename(fname)):
         a = np.array(df[['barcode_id', 'cellID', 'abs_position', 'area']])
 
@@ -66,7 +68,7 @@ if __name__ == '__main__':
 
     if True:
         f = args.area_factor
-        for rank in [2, 5, 4, 7, 10, 11]:
+        for rank in plot_ranks
             bid = barcode_rank[-rank]
             plt.figure(f"barcode {bid} frequency (rank {rank})")
             plt.scatter(*centers.T, c=gene_freq[:, bid], alpha=0.5, s=f*areas,
