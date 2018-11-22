@@ -59,6 +59,9 @@ if __name__ == '__main__':
     img = np.minimum(img, 1.0)
     npixels = (img > 0).any(axis=-1).sum()
     print(f'Reduction from {len(x):,d} to {npixels:,d}')
+    if False:
+        mask = (img > 0).any(axis=-1)
+        xeff, yeff = np.where(mask)
 
     plt.imshow(img, interpolation='none')
     plt.show()
