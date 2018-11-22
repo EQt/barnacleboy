@@ -15,7 +15,7 @@ def euclidean_edge_length(edges, coord):
     return np.sqrt(dx**2 + dy**2)
 
 
-def delaunay_graph(coord):
+def delaunay_graph(coord: np.ndarray) -> np.ndarray:
     """
     Compute the edges of a Delaunay triangulation of the points
     given by `coord` (shape `nx2`).
@@ -50,7 +50,7 @@ def delaunay_graph(coord):
     return edges
 
 
-def plot_edges(edges, coord, ax=None, **args):
+def plot_edges(edges: np.ndarray, coord: np.ndarray, ax=None, **args):
     from matplotlib.collections import LineCollection
     import matplotlib.pyplot as plt
 
