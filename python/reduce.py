@@ -19,6 +19,8 @@ if __name__ == '__main__':
     p.add_argument('-g', '--show-graph', action='store_true')
     p.add_argument('-C', '--cmap', type=str, default='plasma')
     p.add_argument('-a', '--area-factor', type=float, default=0.01)
+    p.add_argument('-l', '--logarithmic', action='store_true')
+    p.add_argument('-e', '--eps', type=float, default=1.0)
     args = p.parse_args()
 
     fname = _test_file_name() if args.fname is None else args.fname
@@ -64,10 +66,15 @@ if __name__ == '__main__':
 
     if True:
         f = args.area_factor
+        log_scale = args.logarithmic
         for rank in plot_ranks:
             bid = barcode_rank[-rank]
+            eps = args.eps
+            gene_color = np.log(gene_freq[:, bid] + eps) if log_scale \
+                else gene_freq[:, bid]
+
             plt.figure(f"barcode {bid} frequency (rank {rank})")
-            plt.scatter(*centers.T, c=gene_freq[:, bid], alpha=0.5, s=f*areas,
+            plt.scatter(*centers.T, c=gene_color, alpha=0.5, s=f*areas,
                         cmap=args.cmap, rasterized=True)
             plt.xlabel('x [µm]')
             plt.ylabel('y [µm]')
