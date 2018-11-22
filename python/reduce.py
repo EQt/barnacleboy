@@ -6,7 +6,7 @@ import numpy as np
 from os.path import basename
 from fisher import _test_file_name
 from reader import load_merfish
-from utils import is_sorted, group_index
+from utils import is_sorted, group_index, Status
 from graph import delaunay_graph, plot_edges, euclidean_edge_length
 
 
@@ -23,16 +23,14 @@ if __name__ == '__main__':
 
     fname = _test_file_name() if args.fname is None else args.fname
     df = load_merfish(fname)
-    print('Loading', basename(fname), end=' ... ', flush=True)
-    a = np.array(df[['barcode_id', 'cellID', 'abs_position', 'area']])
-    print('[ok]')
+    with Status('Loading ' + basename(fname)):
+        a = np.array(df[['barcode_id', 'cellID', 'abs_position', 'area']])
 
-    print('Sorting cells', end=' ... ', flush=True)
-    cell_order = np.argsort(a['cellID'])
-    a = a[cell_order]
-    cell_idx = group_index(a['cellID'])
-    assert len(cell_idx) < 1e5
-    print('[ok]')
+    with Status('Sorting cells'):
+        cell_order = np.argsort(a['cellID'])
+        a = a[cell_order]
+        cell_idx = group_index(a['cellID'])
+        assert len(cell_idx) < 1e5
 
     def iter_cells(axis='abs_position'):
         return np.split(a[axis], cell_idx[1:])
