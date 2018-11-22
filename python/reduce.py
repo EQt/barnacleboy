@@ -6,7 +6,7 @@ import numpy as np
 from os.path import basename
 from fisher import _test_file_name
 from reader import load_merfish
-from utils import is_sorted, group_index, Status
+from utils import group_index, Status
 from graph import delaunay_graph, plot_edges, euclidean_edge_length
 
 
