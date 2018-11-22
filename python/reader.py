@@ -4,7 +4,7 @@ Read merfish binary file information
 import re
 import sys
 import numpy as np
-from typing import List
+from typing import List, IO
 
 
 def sizeof_int(typ: str) -> int:
@@ -37,7 +37,7 @@ def sizeof_type(typ: str) -> int:
     raise NotImplementedError(typ)
 
 
-def sizeof_file(fname: str):
+def sizeof_file(fname: str) -> int:
     """
     Compute the size of a file located at `fname`
     """
@@ -55,7 +55,7 @@ def dtype_typ(c: str):
     return eval('np.' + c)
 
 
-def fread(io, typ, byteorder=sys.byteorder):
+def fread(io: IO, typ: str, byteorder=sys.byteorder):
     """
     Read from (buffered) IO reader in the c type typ, eg
     """
@@ -146,7 +146,7 @@ def read_header(fname: str, check_file_size=True) -> Header:
     return h
 
 
-def load_merfish(fname: str):
+def load_merfish(fname: str) -> np.memmap:
     """
     Return memory-mapped file access that can be treated as a numpy array.
     Usually you want to slice some of the elements and create a new array
