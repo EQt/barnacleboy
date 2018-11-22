@@ -31,6 +31,8 @@ if __name__ == '__main__':
         a = a[cell_order]
         cell_idx = group_index(a['cellID'])
         assert len(cell_idx) < 1e5
+    print(f"#points = {len(a):,d}")
+    print(f"#cells  = {len(cell_idx):,d}")
 
     def iter_cells(axis='abs_position'):
         return np.split(a[axis], cell_idx[1:])
