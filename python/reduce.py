@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     fname = _test_file_name() if args.fname is None else args.fname
     df = load_merfish(fname)
-    plot_ranks = [2, 5, 4, 7, 10, 11]:
+    plot_ranks = [2, 5, 4, 7, 10, 11]
 
     with Status('Loading ' + basename(fname)):
         a = np.array(df[['barcode_id', 'cellID', 'abs_position', 'area']])
@@ -60,15 +60,11 @@ if __name__ == '__main__':
 
 
     # plt.plot(*a['abs_position'].T, '.', alpha=0.1)
-    edges = delaunay_graph(centers)
-    lens = euclidean_edge_length(edges, centers)
-    thres = lens.mean() + 1.5*lens.std()
-    edges = edges[lens <= thres]
     centers = np.fliplr(centers)
 
     if True:
         f = args.area_factor
-        for rank in plot_ranks
+        for rank in plot_ranks:
             bid = barcode_rank[-rank]
             plt.figure(f"barcode {bid} frequency (rank {rank})")
             plt.scatter(*centers.T, c=gene_freq[:, bid], alpha=0.5, s=f*areas,
@@ -79,6 +75,12 @@ if __name__ == '__main__':
             plt.colorbar()
 
     if args.show_graph:
+        with Status("Delaunay graph"):
+            edges = delaunay_graph(centers)
+            lens = euclidean_edge_length(edges, centers)
+            thres = lens.mean() + 1.5*lens.std()
+            edges = edges[lens <= thres]
+
         plt.figure("graph")
         plt.plot(*centers.T, '.', color='orange')
         plot_edges(edges, centers)
