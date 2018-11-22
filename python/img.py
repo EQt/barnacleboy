@@ -15,7 +15,7 @@ def fill_img(img, x, y, v):
         img[xi, yi] += v[i]
 
 
-def generate_colortable(name='Set1'):
+def generate_colortable(name='Set1') -> np.ndarray:
     """
     See "Qualitative colormaps"
     https://matplotlib.org/tutorials/colors/colormaps.html
@@ -24,6 +24,25 @@ def generate_colortable(name='Set1'):
     ncolors = cmap.N
     colortab = np.hstack([np.array(cmap.colors), np.ones((ncolors, 1))])
     return colortab
+
+
+def quantize_coordinates(coords, mpp, verbose=True):
+    min_x, min_y = coords.min(axis=0)
+    max_x, max_y = coords.max(axis=0)
+
+    x = ((coords[:, 0] - min_x) / mpp).astype(int)
+    y = ((coords[:, 1] - min_y) / mpp).astype(int)
+
+    width = int(np.ceil((max_x - min_x) / mpp))
+    height = int(np.ceil((max_y - min_y) / mpp))
+    assert x.max() == width  -1, f'x.max = {x.max()}, width = {width}'
+    assert y.max() == height -1, f'y.max = {y.max()}, height = {height}'
+
+    if verbose:
+        print(f'Coordinates [{min_x:.3f}, {max_x:.3f}]',
+              f'x [{min_y:.3f}, {max_y:.3f}]')
+
+    return x, y
 
 
 if __name__ == '__main__':
@@ -44,18 +63,11 @@ if __name__ == '__main__':
         out = path.basename(fname) + '.png'
         a = load_merfish(fname)
         coords = a['abs_position']
-        min_x, min_y = coords.min(axis=0)
-        max_x, max_y = coords.max(axis=0)
-
-        width = int(np.ceil((max_x - min_x) / mpp))
-        height = int(np.ceil((max_y - min_y) / mpp))
+        x, y = quantize_coordinates(coords, mpp)
+        width, height = x.max()+1, y.max()+1
         vmax = np.quantile(a['total_magnitude'], 1-cut)
 
-        print(f'Coordinates [{min_x:.3f}, {max_x:.3f}]',
-              f'x [{min_y:.3f}, {max_y:.3f}]',
-              f'values [0, {vmax:.3f}]')
-        x = ((coords[:, 0] - min_x) / mpp).astype(int)
-        y = ((coords[:, 1] - min_y) / mpp).astype(int)
+        print(f'Values [0, {vmax:.3f}]')
         v = np.minimum(a['total_magnitude'] / vmax, 1.0)
 
         colortab = generate_colortable() * args.alpha
