@@ -57,7 +57,7 @@ if __name__ == '__main__':
     img = np.zeros((width, height, v4.shape[-1]), dtype=float)
     fill_img(img, x, y, v4)
     img = np.minimum(img, 1.0)
-    npixels = (img > 0).all(axis=-1).sum()
+    npixels = (img > 0).any(axis=-1).sum()
     print(f'Reduction from {len(x):,d} to {npixels:,d}')
 
     plt.imshow(img, interpolation='none')
