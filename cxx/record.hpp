@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 
+#pragma pack(push, 1)
 struct Record
 {
     uint64_t barcode;
@@ -22,6 +23,6 @@ struct Record
     double   distNucleus;
     double   distPeriphery;
 };
+#pragma pack(pop)
 
-
-// static_assert(sizeof(Record) == 194, "Record wrongly aligned");
+static_assert(sizeof(Record) == 194, "Record wrongly aligned");
