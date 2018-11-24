@@ -40,20 +40,19 @@ T
 CFile::read()
 {
     T val;
-    size_t nbytes = fread(&val, sizeof(T), 1, fid);
-    if (nbytes != 1)
-        throw std::runtime_error(std::string("could not read ") +
-                                 std::to_string(sizeof(T)) + " bytes");
+    read(&val);
     return val;
 }
 
 
 template<typename T>
 void
-CFile::read(T*)
+CFile::read(T* val)
 {
-
-
+    size_t nbytes = fread(val, sizeof(T), 1, fid);
+    if (nbytes != 1)
+        throw std::runtime_error(std::string("could not read ") +
+                                 std::to_string(sizeof(T)) + " bytes");
 }
 
 
