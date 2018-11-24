@@ -11,6 +11,9 @@ struct CFile
     template<typename T>
     T read();
 
+    template<typename T>
+    void read(T*);
+
     CFile(const char *fname, const char *mode = "r");
     ~CFile();
 };
@@ -42,6 +45,15 @@ CFile::read()
         throw std::runtime_error(std::string("could not read ") +
                                  std::to_string(sizeof(T)) + " bytes");
     return val;
+}
+
+
+template<typename T>
+void
+CFile::read(T*)
+{
+
+
 }
 
 
