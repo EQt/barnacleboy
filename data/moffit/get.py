@@ -21,5 +21,12 @@ if __name__ == '__main__':
     for n, meta in gse.metadata.items():
         if 'supplementary_file' in n:
             for url in meta:
-                dest = path.join(raw_dir, url.split('/')[-1].replace(gse_id + "_", ""))
-                GEOparse.utils.download_from_url(url, dest, force=False)
+                dest = path.join(raw_dir, url.split('/')[-1])
+                if not path.exists(dest):
+                    GEOparse.utils.download_from_url(url, dest, force=False)
+
+
+    for gsm, samp1 in gse.gsms.items():
+        break
+
+    samp1.download_SRA('bla@bla.com', directory=raw_dir)
