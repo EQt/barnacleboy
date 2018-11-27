@@ -22,7 +22,7 @@ if False:
     assert mat.dtype.name == 'int64'
 else:
     n, m, nnz = pd.read_csv(fname, sep=' ', skiprows=2, nrows=1, header=None).values[0]
-    # vals = pd.read_csv(fname, sep=' ', skiprows=3, header=None)
+    # vals = pd.read_csv(fname, sep=' ', skiprows=3, header=None, dtype=int)
 
 assert n == 27998
 assert m == 31299

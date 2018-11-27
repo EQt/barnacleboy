@@ -42,3 +42,18 @@ class Status:
 
     def __exit__(self, *args):
         print(' [ok]', file=self.out)
+
+
+def prime_factors(n):
+    """https://stackoverflow.com/a/22808285"""
+    i = 2
+    factors = []
+    while i * i <= n:
+        if n % i:
+            i += 1
+        else:
+            n //= i
+            factors.append(i)
+    if n > 1:
+        factors.append(n)
+    return factors
