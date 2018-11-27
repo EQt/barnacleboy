@@ -11,8 +11,9 @@ import GEOparse
 if __name__ == '__main__':
 
     debug = False
+    download_sra = False
     gse_id = "GSE113576"
-    raw_dir = path.join(path.dirname(__file__), './raw')        # "./raw"
+    raw_dir = path.join(path.dirname(__file__), './raw')
     
 
     if debug:
@@ -29,4 +30,5 @@ if __name__ == '__main__':
     for gsm, samp1 in gse.gsms.items():
         break
 
-    samp1.download_SRA('bla@bla.com', directory=raw_dir)
+    if download_sra:
+        samp1.download_SRA('bla@bla.com', directory=raw_dir)
