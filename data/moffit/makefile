@@ -7,7 +7,7 @@ all: raw/pixel.csv raw/pixel.meta.xml raw/paper.xml
 
 
 raw/pixel.csv:
-	wget -O $@ ${URL}/1/bitstream
+	wget -O $@ https://datadryad.org/mn/object/${DOI}/1/bitstream
 	touch $@
 
 
