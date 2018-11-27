@@ -1,5 +1,12 @@
 """
 Load the matrix provided on GEO (gene expression omnibus)
+
+Quotes:
+* "matrix.mtx contains the aggreggated counts from all samples"
+
+* "genes.tsv contains the name associated with each measured gene."
+
+* "barcodes.tsv contains the name associated with each cell for all samples"
 """
 import scipy.io
 import pandas as pd
@@ -19,3 +26,4 @@ assert len(genes) == n
 
 barcodes = pd.read_csv(f"./raw/{gse}_barcodes.tsv.gz", sep='\t', header=None)
 assert len(barcodes) == m
+
