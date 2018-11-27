@@ -1,8 +1,19 @@
-all: raw/pixel.csv raw/pixel.meta.xml
+# see Dryad API: http://wiki.datadryad.org/Data_Access#DataONE_API
+DOI = doi:10.5061/dryad.8t8s248
+URL = https://datadryad.org/resource/${DOI}
+
+
+all: raw/pixel.csv raw/pixel.meta.xml raw/paper.xml
+
 
 raw/pixel.csv:
-	wget -O $@ https://datadryad.org/bitstream/handle/10255/dryad.192695/Moffitt_and_Bambah-Mukku_et_al_merfish_all_cells.csv?sequence=1
+	wget -O $@ ${URL}/1/bitstream
 	touch $@
 
+
+raw/paper.xml:
+	curl ${URL}?XML > $@
+
+
 raw/pixel.meta.xml:
-	curl "https://datadryad.org/resource/doi:10.5061/dryad.8t8s248/DIR" > $@
+	curl ${URL}/1?XML > $@
