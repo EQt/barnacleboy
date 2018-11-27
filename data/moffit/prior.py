@@ -26,6 +26,12 @@ print(f"{(df.Animal_sex == 'Male').sum() / len(df) * 100:.2f}% are male")
 
 # https://en.wikipedia.org/wiki/Bregma
 #   Coordinate system in the skull
+df = pd.read_csv(fname,
+                 usecols=['Bregma', 'Centroid_X', 'Centroid_Y', 'Animal_ID'])
+for animal in [1, 2, 3]:
+    animal_df = df[df.Animal_ID == animal]
+    assert animal_df.Bregma.is_monotonic_decreasing
+    print(f"{len(animal1.Bregma.unique())} slices for Animal_ID == {animal}")
 
 
 # cell classes ...
