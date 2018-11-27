@@ -26,3 +26,10 @@ print(f"{(df.Animal_sex == 'Male').sum() / len(df) * 100:.2f}% are male")
 
 # https://en.wikipedia.org/wiki/Bregma
 #   Coordinate system in the skull
+
+
+# cell classes ...
+df = pd.read_csv(fname, usecols=['Cell_class'])
+print('cell classes:')
+for c in sorted(df.Cell_class.unique()):
+    print('  ', c)
