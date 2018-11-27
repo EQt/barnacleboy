@@ -13,12 +13,14 @@ for c in df.columns:
     print(c)
 
 
-# how many cells?
-if False:
+def count_cells() -> int:
+    """how many cells?"""
     df = pd.read_csv(fname, usecols=['Cell_ID'])
+    ncells = len(df['Cell_ID'].unique())
     print(f"#lines = {len(df):,d}")
-    print(f"There are {len(df['Cell_ID'].unique()):,d} cells")
+    print(f"There are {ncells:,d} cells")
     # result: all cells are unique
+    return ncells
 
 
 # animal ...
