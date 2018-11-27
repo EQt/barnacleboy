@@ -2,6 +2,8 @@
 Let's have a quick look onto the data
 """
 import pandas as pd
+import matplotlib.pyplot as plt
+
 
 fname = 'raw/pixel.csv'
 
@@ -32,6 +34,15 @@ for animal in [1, 2, 3]:
     animal_df = df[df.Animal_ID == animal]
     assert animal_df.Bregma.is_monotonic_decreasing
     print(f"{len(animal1.Bregma.unique())} slices for Animal_ID == {animal}")
+
+
+def plot_all_cells(df, animal_id=1, bregma=0.26):
+    """Plot cell location (of all genes)"""
+    animal1 = df[df.Animal_ID == animal_id]
+    slice1 = animal1[animal1.Bregma == bregma]
+
+    plt.figure(f"animal {animal_id}, bregma {bregma}")
+    plt.plot(slice1.Centroid_X, slice1.Centroid_Y, '.')
 
 
 # cell classes ...
