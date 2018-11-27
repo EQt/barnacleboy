@@ -21,5 +21,7 @@ assert ns == x.getroot().nsmap[None]    # same namespace
 
 [descr] = x.xpath('//i:meta[@name="DC.description"]/@content', namespaces={'i': ns})
 
-for s in descr.split('.'):
-    print(s)
+items = descr.split('. “')
+print(items[0] + ':')
+print()
+print("\n\n".join("“" + s for s in items[1:]))
