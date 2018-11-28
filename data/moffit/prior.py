@@ -1,6 +1,7 @@
 """
 Let's have a quick look onto the data
 """
+import pandas as pd
 import matplotlib.pyplot as plt
 try:
     from dask.dataframe import read_csv as rcsv
@@ -17,7 +18,7 @@ fname = 'raw/pixel.csv'
 
 def print_columns(fname):
     """show all columns"""
-    df = read_csv(fname, nrows=10)
+    df = pd.read_csv(fname, nrows=10)
     for c in df.columns:
         print(c)
 
@@ -69,6 +70,7 @@ def print_cell_classes(fname):
 
 
 if __name__ == '__main__':
+    print_columns(fname)
     df = read_csv(fname,
                   usecols=['Bregma', 'Centroid_X', 'Centroid_Y', 'Animal_ID'],
                   dtype={
