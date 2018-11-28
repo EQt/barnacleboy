@@ -128,7 +128,9 @@ if __name__ == '__main__':
                 for c in select.columns:
                     io.create_dataset(c, data=select[c], compression=9)
         else:
-            select.to_csv(args.out, index=None, float_format="%07.4f")
+            select.to_csv(args.out, index=None, float_format="%07.4f",
+                          compression="gzip" if args.out.endswith(".gz") else
+                          None)
         exit(0)
 
     print(sorted(df['Bregma'].unique()))
