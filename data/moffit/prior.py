@@ -2,6 +2,7 @@
 Let's have a quick look onto the data
 """
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 try:
     from dask.dataframe import read_csv as rcsv
@@ -57,16 +58,22 @@ def print_num_slices(animals=[1, 2, 3]):
     for animal in animals:
         animal_df = df[df.Animal_ID == animal]
         assert animal_df.Bregma.is_monotonic_decreasing
-        print(f"{len(animal_df.Bregma.unique())} slices for Animal_ID == {animal}")
+        print(f"{len(animal_df.Bregma.unique())} slices " +
+              f"for Animal_ID == {animal}")
 
 
-def plot_all_cells(df, animal_id=1, bregma=0.26):
+def plot_cells(df, animal_id=1, bregma=0.26, gene=None):
     """Plot cell location (of all genes)"""
     animal1 = df[df.Animal_ID == animal_id]
     slice1 = animal1[animal1.Bregma == bregma]
 
     plt.figure(f"animal {animal_id}, bregma {bregma}")
-    plt.plot(slice1.Centroid_X, slice1.Centroid_Y, '.')
+    if gene is not None:
+        color = slice1[gene]
+        print('nan:', np.isnan(color).sum() / len(color))
+        plt.scatter(slice1.Centroid_X, slice1.Centroid_Y, c=color)
+    else:
+        plt.plot(slice1.Centroid_X, slice1.Centroid_Y, '.')
 
 
 def print_cell_classes(fname):
@@ -77,16 +84,18 @@ def print_cell_classes(fname):
 
 
 if __name__ == '__main__':
-    for g in gene_list(fname):
-        print(g)
-    exit
-    df = read_csv(fname,
-                  usecols=['Bregma', 'Centroid_X', 'Centroid_Y', 'Animal_ID'],
-                  dtype={
-                      'Bregma': float,
-                      'Centroid_X': float,
-                      'Centroid_Y': float,
-                      'Animal_ID': int})
+    # for g in gene_list(fname):
+    #     print(g)
+    gene = 'Ace2'
+    dtype = {
+        'Bregma': float,
+        'Centroid_X': float,
+        'Centroid_Y': float,
+        'Animal_ID': int,
+        gene: float
+    }
+    df = read_csv(fname, usecols=list(dtype.keys()), dtype=dtype)
+    # print(sorted(df['Bregma'].unique()))
     print('loaded')
-    plot_all_cells(df)
+    plot_cells(df, bregma=0.01, gene=gene)
     plt.show()
