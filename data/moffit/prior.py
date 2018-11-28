@@ -22,6 +22,13 @@ def print_columns(fname):
     for c in df.columns:
         print(c)
 
+def gene_list(fname, last_col='Neuron_cluster_ID'):
+    df = pd.read_csv(fname, nrows=1)
+    for idx, c in enumerate(df.columns):
+        if c == last_col:
+            break
+    return df.columns[idx+1:].tolist()
+
 
 def count_cells() -> int:
     """how many cells?"""
@@ -70,7 +77,9 @@ def print_cell_classes(fname):
 
 
 if __name__ == '__main__':
-    print_columns(fname)
+    for g in gene_list(fname):
+        print(g)
+    exit
     df = read_csv(fname,
                   usecols=['Bregma', 'Centroid_X', 'Centroid_Y', 'Animal_ID'],
                   dtype={
