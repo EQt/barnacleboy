@@ -96,6 +96,7 @@ if __name__ == '__main__':
     p.add_argument('-l', '--list-genes', action='store_true')
     p.add_argument('-g', '--gene', type=str, default='Pak3')
     p.add_argument('-c', '--cmap', type=str, default=None)
+    p.add_argument('-o', '--out', type=str, default=None)
     args = p.parse_args()
 
 
@@ -114,6 +115,13 @@ if __name__ == '__main__':
     }
     df = read_csv(fname, usecols=list(dtype.keys()), dtype=dtype)
     print('loaded')
+
+    if args.out:
+        select = df[df.Animal_ID == 1]
+        select = select[select.Bregma == 0.06]
+        select[["Centroid_X", "Centroid_Y", gene]].to_csv(args.out, index=None,
+                                                          float_format="%07.4f")
+        exit(0)
     print(sorted(df['Bregma'].unique()))
     print(sorted(df['Animal_ID'].unique()))
 
