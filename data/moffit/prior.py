@@ -119,9 +119,18 @@ if __name__ == '__main__':
     if args.out:
         select = df[df.Animal_ID == 1]
         select = select[select.Bregma == 0.06]
-        select[["Centroid_X", "Centroid_Y", gene]].to_csv(args.out, index=None,
-                                                          float_format="%07.4f")
+        select = select[["Centroid_X", "Centroid_Y", gene]]
+        print(len(select), 'points')
+        if args.out.endswith('.h5'):
+            import h5py
+
+            with h5py.File(args.out, 'w') as io:
+                for c in select.columns:
+                    io.create_dataset(c, data=select[c], compression=9)
+        else:
+            select.to_csv(args.out, index=None, float_format="%07.4f")
         exit(0)
+
     print(sorted(df['Bregma'].unique()))
     print(sorted(df['Animal_ID'].unique()))
 
