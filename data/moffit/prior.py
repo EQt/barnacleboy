@@ -62,7 +62,7 @@ def print_num_slices(animals=[1, 2, 3]):
               f"for Animal_ID == {animal}")
 
 
-def plot_cells(df, animal_id=1, bregma=0.26, gene=None):
+def plot_cells(df, animal_id=1, bregma=0.26, gene=None, **args):
     """Plot cell location (of all genes)"""
     animal1 = df[df.Animal_ID == animal_id]
     slice1 = animal1[animal1.Bregma == bregma]
@@ -71,9 +71,9 @@ def plot_cells(df, animal_id=1, bregma=0.26, gene=None):
     if gene is not None:
         color = slice1[gene]
         print('nan:', np.isnan(color).sum() / len(color))
-        plt.scatter(slice1.Centroid_X, slice1.Centroid_Y, c=color)
+        plt.scatter(slice1.Centroid_X, slice1.Centroid_Y, c=color, **args)
     else:
-        plt.plot(slice1.Centroid_X, slice1.Centroid_Y, '.')
+        plt.plot(slice1.Centroid_X, slice1.Centroid_Y, '.', **args)
 
 
 def print_cell_classes(fname):
@@ -86,7 +86,7 @@ def print_cell_classes(fname):
 if __name__ == '__main__':
     # for g in gene_list(fname):
     #     print(g)
-    gene = 'Ace2'
+    gene = 'Pak3'
     dtype = {
         'Bregma': float,
         'Centroid_X': float,
@@ -97,5 +97,5 @@ if __name__ == '__main__':
     df = read_csv(fname, usecols=list(dtype.keys()), dtype=dtype)
     # print(sorted(df['Bregma'].unique()))
     print('loaded')
-    plot_cells(df, bregma=0.01, gene=gene)
+    plot_cells(df, bregma=0.01, animal_id=1, gene=gene, alpha=0.1, s=200)
     plt.show()
