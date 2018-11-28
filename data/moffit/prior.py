@@ -59,3 +59,25 @@ def print_cell_classes(fname):
     print('cell classes:')
     for c in sorted(df.Cell_class.unique()):
         print('  ', c)
+
+
+if __name__ == '__main__':
+    try:
+        from dask.dataframe import read_csv as rcsv
+
+        def read_csv(*args, **kwargs):
+            return rcsv(*args, **kwargs).compute()
+
+    except ImportError:
+        from pandas import read_csv
+
+    df = read_csv(fname,
+                  usecols=['Bregma', 'Centroid_X', 'Centroid_Y', 'Animal_ID'],
+                  dtype={
+                      'Bregma': float,
+                      'Centroid_X': float,
+                      'Centroid_Y': float,
+                      'Animal_ID': int})
+    print('loaded')
+    plot_all_cells(df)
+    plt.show()
