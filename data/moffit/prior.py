@@ -90,9 +90,21 @@ def print_cell_classes(fname):
 
 
 if __name__ == '__main__':
-    # for g in gene_list(fname):
-    #     print(g)
-    gene = 'Pak3'
+    import argparse
+
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('-l', '--list-genes', action='store_true')
+    p.add_argument('-g', '--gene', type=str, default='Pak3')
+    p.add_argument('-c', '--cmap', type=str, default=None)
+    args = p.parse_args()
+
+
+    if args.list_genes:
+        for g in gene_list(fname):
+            print(g)
+        exit(0)
+
+    gene = args.gene
     dtype = {
         'Bregma': float,
         'Centroid_X': float,
@@ -111,7 +123,7 @@ if __name__ == '__main__':
     cmap = 'RdYlBu'
     cmap = 'hot'
     cmap = 'coolwarm'
-    cmap = None
+    cmap = args.cmap
     args = dict(alpha=0.1, s=150, edgecolors='none', cmap=cmap, eps=-0.5)
 
     for a in [1, 2, 3, 4, 11, 13, 23][:2]:
