@@ -7,10 +7,12 @@ import matplotlib.pyplot as plt
 
 fname = 'raw/pixel.csv'
 
-# show all columns
-df = pd.read_csv(fname, nrows=10)
-for c in df.columns:
-    print(c)
+
+def print_columns(fname):
+    """show all columns"""
+    df = pd.read_csv(fname, nrows=10)
+    for c in df.columns:
+        print(c)
 
 
 def count_cells() -> int:
@@ -23,19 +25,24 @@ def count_cells() -> int:
     return ncells
 
 
-# animal ...
-df = pd.read_csv(fname, usecols=['Animal_sex', 'Animal_ID'])
-print(f"{len(df.Animal_ID.unique())} different animals involved")
-print(f"{(df.Animal_sex == 'Male').sum() / len(df) * 100:.2f}% are male")
+def print_gender(fname: str):
+    """animal ..."""
+    df = pd.read_csv(fname, usecols=['Animal_sex', 'Animal_ID'])
+    print(f"{len(df.Animal_ID.unique())} different animals involved")
+    print(f"{(df.Animal_sex == 'Male').sum() / len(df) * 100:.2f}% are male")
 
-# https://en.wikipedia.org/wiki/Bregma
-#   Coordinate system in the skull
-df = pd.read_csv(fname,
-                 usecols=['Bregma', 'Centroid_X', 'Centroid_Y', 'Animal_ID'])
-for animal in [1, 2, 3]:
-    animal_df = df[df.Animal_ID == animal]
-    assert animal_df.Bregma.is_monotonic_decreasing
-    print(f"{len(animal1.Bregma.unique())} slices for Animal_ID == {animal}")
+
+def print_num_slices(animals=[1, 2, 3]):
+    """
+    https://en.wikipedia.org/wiki/Bregma
+       Coordinate system in the skull
+    """
+    df = pd.read_csv(fname,
+                     usecols=['Bregma', 'Centroid_X', 'Centroid_Y', 'Animal_ID'])
+    for animal in animals:
+        animal_df = df[df.Animal_ID == animal]
+        assert animal_df.Bregma.is_monotonic_decreasing
+        print(f"{len(animal1.Bregma.unique())} slices for Animal_ID == {animal}")
 
 
 def plot_all_cells(df, animal_id=1, bregma=0.26):
@@ -47,8 +54,8 @@ def plot_all_cells(df, animal_id=1, bregma=0.26):
     plt.plot(slice1.Centroid_X, slice1.Centroid_Y, '.')
 
 
-# cell classes ...
-df = pd.read_csv(fname, usecols=['Cell_class'])
-print('cell classes:')
-for c in sorted(df.Cell_class.unique()):
-    print('  ', c)
+def print_cell_classes(fname):
+    df = pd.read_csv(fname, usecols=['Cell_class'])
+    print('cell classes:')
+    for c in sorted(df.Cell_class.unique()):
+        print('  ', c)
