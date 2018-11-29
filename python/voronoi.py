@@ -97,6 +97,7 @@ def plot_scatter(points, colors, cmap=None, alpha=0.1, s=150):
     """... to have usable defaults"""
     args = dict(alpha=alpha, s=s, edgecolors='none', cmap=cmap)
     plt.scatter(points[:, 0], points[:, 1], c=colors, **args)
+    plt.gca().set_aspect('equal')
 
 
 if __name__ == '__main__':
@@ -128,13 +129,11 @@ if __name__ == '__main__':
         assert colors.min() >= 0
         assert colors.max() <= 1.01, f'{colors.max()}'
 
-    plot_scatter(points, colors, s=300, alpha=0.15)
-    plot_scatter(points, colors, s=160, alpha=0.2)
-    plot_scatter(points, colors, s=60, alpha=0.27)
-    plot_scatter(points, colors, s=15, alpha=0.75)
+    for s, a in [(350, 0.075), (160, 0.12), (60, 0.2), (5, 0.7)]:
+        plot_scatter(points, colors, s=s, alpha=a)
     plt.colorbar()
     plt.figure()
     plot_voronoi(points, colors, c=15)
-    plot_scatter(points, colors, s=7, alpha=0.9)
+    plot_scatter(points, colors, s=3, alpha=0.9)
     plt.colorbar()
     plt.show()
