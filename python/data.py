@@ -22,4 +22,4 @@ def moffit_example(generate=True) -> str:
         cmd = ['make', '-C', path.dirname(fn), path.basename(fn)]
         print(*cmd, file=sys.stderr)
         sp.check_call(cmd)
-    return fn
+    return path.relpath(fn)
