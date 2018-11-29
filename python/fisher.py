@@ -8,12 +8,7 @@ etc.
 import numpy as np
 from os import path
 from reader import read_header, load_merfish
-
-
-def _test_file_name() -> str:
-    """File name to the test file (on my computer)"""
-    return path.join(path.dirname(__file__),
-                     "..", "..", "raw", "rep2", "assigned_blist.bin")
+from data import _test_file_name
 
 
 if __name__ == '__main__':
@@ -114,16 +109,19 @@ if __name__ == '__main__':
             if False:
                 for cellID in [13, 42, 11, 9]:
                     mask = array['cellID'] == cellID
-                    print(f"cell {cellID} contains {mask.sum()} elements")
-                    a = np.array(array['abs_position'][:, 0][mask], dtype=float)
-                    # b = np.array(array['pixel_centroid'][:, 0][mask], dtype=float)
-                    b = np.array(array['weighted_pixel_centroid'][:, 0][mask], dtype=float)
+                    print(f"cell {cellID} contains {m.sum()} elements")
+                    a = np.array(array['abs_position'][:, 0][m], dtype=float)
+                    # b = np.array(array['pixel_centroid'][:, 0][m],
+                    #              dtype=float)
+                    b = np.array(array['weighted_pixel_centroid'][:, 0][m],
+                                 dtype=float)
                     a -= a.mean()
                     b -= b.mean()
                     print((a / b).std() * 100)
                     # plt.plot((a / b).std())
                     # plt.figure(f"cell {cellID}")
-                    plt.hist(a / b, log=True, bins=100, histtype='step', density=True)
+                    plt.hist(a / b, log=True, bins=100, histtype='step',
+                             density=True)
 
             # distPeriphery
             plt.show()
