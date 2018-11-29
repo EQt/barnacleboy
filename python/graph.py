@@ -69,26 +69,49 @@ def plot_edges(edges: np.ndarray, coord: np.ndarray, ax=None, **args):
     ax.set_aspect('equal')
 
 
+def store_graph(fname: str, edges: np.ndarray, values: np.ndarray):
+    import h5py
+
+    with h5py.File(fname, 'w') as io:
+        io.create_dataset('edges', data=edges, compression=5)
+        io.create_dataset('input', data=values, compression=5)
+
+
 if __name__ == '__main__':
     import argparse
     import pandas as pd
     import matplotlib.pyplot as plt
+    from scipy import stats
     from data import moffit_example
 
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('fname', nargs='?', type=str, default=moffit_example)
+    p.add_argument('-p', '--plot', action='store_true')
+    p.add_argument('-o', '--out', type=str, default=None,
+                   help='Write an HDF5 instance')
     args = p.parse_args()
 
     fname = args.fname() if callable(args.fname) else args.fname
     df = pd.read_csv(fname)
-
+    values = df[df.columns[-1]]
+    values = stats.trim1(values, 0.01)
     coord = df[df.columns[:2]].values
+
     edges = delaunay_graph(coord)
     edges = delaunay_graph(coord)
     lens = euclidean_edge_length(edges, coord)
     thres = lens.mean() + 1.2*lens.std()
     edges = edges[lens <= thres]
 
-    print(len(edges))
-    plot_edges(edges, coord)
-    plt.show()
+    zr = (values <= 0).sum() / len(values)
+    print(len(edges), 'edges')
+    print(f"zero = {zr * 100:.2f}%")
+    if args.plot:
+        plt.figure("graph")
+        plot_edges(edges, coord)
+        plt.figure(f"input: {df.columns[-1]}, zeros cutted")
+        plt.hist(values[values > 0], bins=100, log=True, histtype='step')
+        plt.show()
+
+    if args.out:
+        store_graph(args.out, edges, values)
