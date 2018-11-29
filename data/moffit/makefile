@@ -3,7 +3,7 @@ DOI = doi:10.5061/dryad.8t8s248
 URL = https://datadryad.org/resource/${DOI}
 
 
-all: raw/pixel.csv raw/pixel.meta.xml raw/paper.xml
+all: raw/pixel.csv raw/pixel.meta.xml raw/paper.xml example.csv.gz
 
 
 raw/pixel.csv:
@@ -18,3 +18,7 @@ raw/paper.xml:
 
 raw/pixel.meta.xml:
 	curl ${URL}/1?XML > $@
+
+
+example.csv.gz: raw/pixel.csv prior.py
+	python prior.py -o $@
