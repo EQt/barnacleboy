@@ -24,6 +24,9 @@ def delaunay_graph(coord: np.ndarray) -> np.ndarray:
     """
     from scipy.spatial import Delaunay
 
+    assert coord.ndim == 2
+    assert coord.shape[1] == 2, f"coord have to be 2d array"
+
     @njit(cache=True)
     def compute_edges(edges, indptr, indices):
         m = len(edges)
