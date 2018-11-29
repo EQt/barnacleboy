@@ -46,8 +46,7 @@ def delaunay_graph(coord: np.ndarray) -> np.ndarray:
 
     m = len(indices)
     assert m % 2 == 0
-    m //= 2
-    # n = len(indptr) -1
+    m //= 2     # number of edges
     edges = np.empty((m, 2), dtype=int)
     compute_edges(edges, indptr, indices)
     return edges
