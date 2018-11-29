@@ -103,10 +103,11 @@ def plot_scatter(points, colors, cmap=None, alpha=0.1, s=150):
 
 if __name__ == '__main__':
     import argparse
+    from data import moffit_example
 
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('fname', type=str, nargs='?',
-                   default="../data/moffit/example.csv.gz")
+                   default=moffit_example())
     p.add_argument('-e', '--eps', type=float, default=0.1)
     p.add_argument('-l', '--logarithmic', action='store_true')
     p.add_argument('-c', '--cmap', type=str, default=None)

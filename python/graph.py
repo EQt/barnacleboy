@@ -1,5 +1,5 @@
 """
-Graph related computations in the Euclidean plain
+Graphs in the Euclidean plain
 """
 import numpy as np
 from numba import njit
@@ -61,3 +61,9 @@ def plot_edges(edges: np.ndarray, coord: np.ndarray, ax=None, **args):
     line_coord = coord[edges]
     lc = LineCollection(line_coord, **args)
     ax.add_collection(lc)
+
+
+if __name__ == '__main__':
+    import argparse
+    import pandas as pd
+    
