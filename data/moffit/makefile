@@ -8,6 +8,7 @@ all: raw/pixel.csv raw/pixel.meta.xml raw/paper.xml
 
 raw/pixel.csv:
 	wget -O $@ https://datadryad.org/mn/object/${DOI}/1/bitstream
+	md5sum -c pixel.md5
 	touch $@
 
 
