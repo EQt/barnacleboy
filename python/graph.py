@@ -56,14 +56,39 @@ def plot_edges(edges: np.ndarray, coord: np.ndarray, ax=None, **args):
     from matplotlib.collections import LineCollection
     import matplotlib.pyplot as plt
 
+    xmin, ymin = coord.min(axis=0)
+    xmax, ymax = coord.max(axis=0)
+    offset = 0.001 * (xmax - xmin)
+
+    lc = LineCollection(coord[edges], **args)
     if ax is None:
         ax = plt.gca()
-    line_coord = coord[edges]
-    lc = LineCollection(line_coord, **args)
     ax.add_collection(lc)
+    ax.set_xlim([xmin - offset, xmax + offset])
+    ax.set_ylim([ymin - offset, ymax + offset])
+    ax.set_aspect('equal')
 
 
 if __name__ == '__main__':
     import argparse
     import pandas as pd
-    
+    import matplotlib.pyplot as plt
+    from data import moffit_example
+
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('fname', nargs='?', type=str, default=moffit_example)
+    args = p.parse_args()
+
+    fname = args.fname() if callable(args.fname) else args.fname
+    df = pd.read_csv(fname)
+
+    coord = df[df.columns[:2]].values
+    edges = delaunay_graph(coord)
+    edges = delaunay_graph(coord)
+    lens = euclidean_edge_length(edges, coord)
+    thres = lens.mean() + 1.2*lens.std()
+    edges = edges[lens <= thres]
+
+    print(len(edges))
+    plot_edges(edges, coord)
+    plt.show()
