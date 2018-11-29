@@ -97,6 +97,7 @@ def plot_scatter(points, colors, cmap=None, alpha=0.1, s=150):
     """... to have usable defaults"""
     args = dict(alpha=alpha, s=s, edgecolors='none', cmap=cmap)
     plt.scatter(points[:, 0], points[:, 1], c=colors, **args)
+    plt.gca().set_facecolor('k')
     plt.gca().set_aspect('equal')
 
 
