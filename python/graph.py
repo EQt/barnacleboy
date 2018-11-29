@@ -94,7 +94,6 @@ if __name__ == '__main__':
     fname = args.fname() if callable(args.fname) else args.fname
     df = pd.read_csv(fname)
     values = df[df.columns[-1]]
-    values = stats.trim1(values, 0.01)
     coord = df[df.columns[:2]].values
 
     edges = delaunay_graph(coord)
@@ -103,14 +102,18 @@ if __name__ == '__main__':
     thres = lens.mean() + 1.2*lens.std()
     edges = edges[lens <= thres]
 
-    zr = (values <= 0).sum() / len(values)
+    zeros = values <= 0
+    zr = zeros.sum() / len(values)
     print(len(edges), 'edges')
     print(f"zero = {zr * 100:.2f}%")
+
     if args.plot:
         plt.figure("graph")
         plot_edges(edges, coord)
+        plt.plot(*coord[zeros].T, 'r.')
         plt.figure(f"input: {df.columns[-1]}, zeros cutted")
-        plt.hist(values[values > 0], bins=100, log=True, histtype='step')
+        val = stats.trim1(values, 0.01)
+        plt.hist(val[val > 0], bins=100, log=True, histtype='step')
         plt.show()
 
     if args.out:
