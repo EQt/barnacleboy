@@ -69,12 +69,14 @@ def plot_edges(edges: np.ndarray, coord: np.ndarray, ax=None, **args):
     ax.set_aspect('equal')
 
 
-def store_graph(fname: str, edges: np.ndarray, values: np.ndarray):
+def store_graph(fname: str, edges: np.ndarray, values: np.ndarray,
+                coord: np.ndarray):
     import h5py
 
     with h5py.File(fname, 'w') as io:
         io.create_dataset('edges', data=edges, compression=5)
         io.create_dataset('input', data=values, compression=5)
+        io.create_dataset('coord', data=coord, compression=5)
 
 
 if __name__ == '__main__':
@@ -117,4 +119,4 @@ if __name__ == '__main__':
         plt.show()
 
     if args.out:
-        store_graph(args.out, edges, values)
+        store_graph(args.out, edges, values, coord)
