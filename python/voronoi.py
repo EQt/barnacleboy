@@ -101,6 +101,20 @@ def plot_scatter(points, colors, cmap=None, alpha=0.1, s=150):
     plt.gca().set_aspect('equal')
 
 
+def transform_colors(colors, logarithmic=False, eps=0.1, quantile=0.99):
+    if logarithmic:
+        colors = (np.log(np.maximum(colors, eps)))
+        colors /= colors.max()
+    else:
+        colors /= colors.max()
+        assert colors.min() >= 0
+        assert colors.max() <= 1.01, f'{colors.max()}'
+
+    thres = np.quantile(colors, quantile)
+    colors[colors > thres] = thres
+    return colors
+
+
 if __name__ == '__main__':
     import argparse
     from data import moffit_example
@@ -123,17 +137,10 @@ if __name__ == '__main__':
 
     df = pd.read_csv(args.fname)
     points = df[df.columns[:2]].values
-    colors = df[df.columns[2]].values
-    if logarithmic:
-        colors = (np.log(np.maximum(colors, eps)))
-        colors /= colors.max()
-    else:
-        colors /= colors.max()
-        assert colors.min() >= 0
-        assert colors.max() <= 1.01, f'{colors.max()}'
-
-    thres = np.quantile(colors, args.quantile)
-    colors[colors > thres] = thres
+    colors = transform_colors(df[df.columns[2]].values,
+                              logarithmic=args.logarithmic,
+                              eps=args.eps,
+                              quantile=args.quantile)
 
     for s, a in [(350, 0.075), (160, 0.12), (60, 0.2), (5, 0.7)]:
         plot_scatter(points, colors, s=s, alpha=a)
