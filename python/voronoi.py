@@ -111,6 +111,7 @@ if __name__ == '__main__':
     p.add_argument('-e', '--eps', type=float, default=0.1)
     p.add_argument('-l', '--logarithmic', action='store_true')
     p.add_argument('-c', '--cmap', type=str, default=None)
+    p.add_argument('-q', '--quantile', type=float, default=0.99)
     args = p.parse_args()
 
     eps = args.eps
@@ -130,6 +131,9 @@ if __name__ == '__main__':
         colors /= colors.max()
         assert colors.min() >= 0
         assert colors.max() <= 1.01, f'{colors.max()}'
+
+    thres = np.quantile(colors, args.quantile)
+    colors[colors > thres] = thres
 
     for s, a in [(350, 0.075), (160, 0.12), (60, 0.2), (5, 0.7)]:
         plot_scatter(points, colors, s=s, alpha=a)
