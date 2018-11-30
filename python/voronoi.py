@@ -101,6 +101,11 @@ def plot_scatter(points, colors, cmap=None, alpha=0.1, s=150):
     plt.gca().set_aspect('equal')
 
 
+def plot_clouds(points, colors):
+    for s, a in [(350, 0.075), (160, 0.12), (60, 0.2), (5, 0.7)]:
+        plot_scatter(points, colors, s=s, alpha=a)
+
+
 def transform_colors(colors, logarithmic=False, eps=0.1, quantile=0.99):
     if logarithmic:
         colors = (np.log(np.maximum(colors, eps)))
@@ -137,13 +142,11 @@ if __name__ == '__main__':
 
     df = pd.read_csv(args.fname)
     points = df[df.columns[:2]].values
-    colors = transform_colors(df[df.columns[2]].values,
+    colors = transform_colors(df[df.columns[2]].values.copy(),
                               logarithmic=args.logarithmic,
                               eps=args.eps,
                               quantile=args.quantile)
-
-    for s, a in [(350, 0.075), (160, 0.12), (60, 0.2), (5, 0.7)]:
-        plot_scatter(points, colors, s=s, alpha=a)
+    plot_clouds(points, colors)
     plt.colorbar()
     plt.figure()
     plot_voronoi(points, colors, c=15)
