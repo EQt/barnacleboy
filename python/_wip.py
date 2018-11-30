@@ -3,7 +3,7 @@ Work in progress (ie playground) of Elias
 """
 import matplotlib.pyplot as plt
 import numpy as np
-from fisher import _test_file_name
+from data import _test_file_name
 from reader import load_merfish
 
 

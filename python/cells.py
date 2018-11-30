@@ -32,7 +32,7 @@ def load_cells(fname: str, cell_ids: List, verbose=True):
 
 if __name__ == '__main__':
     import argparse
-    from fisher import _test_file_name
+    from data import _test_file_name
 
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('cell', nargs='*', default=["2", "3", "4"])

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numba import njit
 
-from fisher import _test_file_name
+from data import _test_file_name
 from reader import load_merfish
 
 

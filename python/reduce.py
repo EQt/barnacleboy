@@ -4,7 +4,7 @@ Reduce the data to a graph having one node per cell
 import matplotlib.pyplot as plt
 import numpy as np
 from os.path import basename
-from fisher import _test_file_name
+from data import _test_file_name
 from reader import load_merfish
 from utils import group_index, Status
 from graph import delaunay_graph, plot_edges, euclidean_edge_length

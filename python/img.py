@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from os import path
 from numba import njit
 from reader import load_merfish
-from fisher import _test_file_name
+from data import _test_file_name
 
 
 @njit(cache=True)
