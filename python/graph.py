@@ -5,7 +5,7 @@ import numpy as np
 from numba import njit
 
 
-def euclidean_edge_length(edges, coord):
+def euclidean_edge_length(edges: np.ndarray, coord: np.ndarray) -> np.ndarray:
     """
     Result: array (shape `(m,)`)
     """
