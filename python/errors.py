@@ -1,7 +1,6 @@
 import click
 import numpy as np
-import pandas as pd
-from reader import load_merfish
+from reader import load_merfish, read_codebook
 
 
 @click.command()
@@ -36,12 +35,10 @@ def estimate_errors(merfish: str, codebook: str):
     # for i in range(16):
     #     print(f"{i}: {np.sum(zero_to_one_errors == (1 << i)) / num_records}")
 
-    codes = pd.read_csv(codebook, skiprows=3, skipinitialspace=True,
-                        usecols=['name', 'barcode'],
-                        dtype={'name': str, 'barcode': str})
+    codes = read_codebook(codebook)[['name', 'barcode']]
     blanks = codes[codes['name'].str.startswith('Blank-')]
-    blank_barcodes_str = blanks['barcode'].values
-    blank_barcodes = np.array(list(map(lambda v: int(v, base=2), blank_barcodes_str))).reshape((-1, 1))
+    blank_barcodes_str = list(map(bin, blanks['barcode'].values))
+    blank_barcodes = blanks['barcode'].values.reshape((-1, 1))
 
     print()
     print(f"Assigned blank counts (pre-correction):\n"
