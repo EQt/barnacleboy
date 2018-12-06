@@ -3,8 +3,10 @@ Read merfish binary file information
 """
 import re
 import sys
-import numpy as np
 from typing import List, IO
+
+import numpy as np
+import pandas as pd
 
 
 def sizeof_int(typ: str) -> int:
@@ -90,6 +92,7 @@ class RecordDef:
         Print a C struct definition to file `out`
         (eg to generate a header to be used in C/C++ code).
         """
+
         def ctype(c):
             if c.startswith('int') or c.startswith('uint'):
                 return c + '_t'
@@ -98,7 +101,7 @@ class RecordDef:
         print(f"struct {name}", file=out)
         print("{", file=out)
         for d, f, c in self:
-            print(" " * (indent-1),
+            print(" " * (indent - 1),
                   ctype(c).ljust(type_align),
                   d + (f"[{f}]" if f > 1 else "") + ";",
                   file=out)
@@ -161,6 +164,12 @@ def load_merfish(fname: str) -> np.memmap:
     h = read_header(fname)
     array = np.memmap(fname, offset=h.offset, dtype=h.layout.to_dtype())
     return array
+
+
+def read_codebook(fname: str) -> pd.DataFrame:
+    return pd.read_csv(fname, skiprows=3, skipinitialspace=True,
+                       dtype={'name': str, 'id': str},
+                       converters={'barcode': lambda x: int(x, 2)})
 
 
 if __name__ == '__main__':
