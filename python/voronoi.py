@@ -106,7 +106,7 @@ def plot_clouds(points, colors):
         plot_scatter(points, colors, s=s, alpha=a)
 
 
-def transform_colors(colors, logarithmic=False, eps=0.1, quantile=0.99):
+def transform_colors(colors, logarithmic=False, eps=0.1, quant=0.99):
     if logarithmic:
         colors = (np.log(np.maximum(colors, eps)))
         colors /= colors.max()
@@ -115,7 +115,7 @@ def transform_colors(colors, logarithmic=False, eps=0.1, quantile=0.99):
         assert colors.min() >= 0
         assert colors.max() <= 1.01, f'{colors.max()}'
 
-    thres = np.quantile(colors, quantile)
+    thres = np.percentile(colors, 100*quant)
     colors[colors > thres] = thres
     return colors
 
