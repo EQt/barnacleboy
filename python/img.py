@@ -66,7 +66,7 @@ if __name__ == '__main__':
         coords = a['abs_position']
         x, y = quantize_coordinates(coords, mpp)
         width, height = x.max()+1, y.max()+1
-        vmax = np.quantile(a['total_magnitude'], 1-cut)
+        vmax = np.percentile(a['total_magnitude'], 100*(1-cut))
 
         print(f'Values [0, {vmax:.3f}]')
         v = np.minimum(a['total_magnitude'] / vmax, 1.0)
