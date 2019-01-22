@@ -145,7 +145,7 @@ if __name__ == '__main__':
     colors = transform_colors(df[df.columns[2]].values.copy(),
                               logarithmic=args.logarithmic,
                               eps=args.eps,
-                              quantile=args.quantile)
+                              quant=args.quantile)
     plot_clouds(points, colors)
     plt.colorbar()
     plt.figure()
