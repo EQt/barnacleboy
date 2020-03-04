@@ -7,12 +7,14 @@ PYDIR = ../../python
 all: raw/pixel.csv raw/pixel.meta.xml raw/paper.xml example.csv.gz example.graph.h5
 
 
-raw/pixel.csv:
+raw/pixel.zip:
 	mkdir -p raw
-	wget -O $@ https://datadryad.org/mn/object/${DOI}/1/bitstream
+	wget -O $@ https://datadryad.org/stash/downloads/download_resource/20150
+
+raw/pixel.csv: raw/pixel.zip
+	unzip -p $< > $@
 	md5sum -c pixel.md5
 	touch $@
-
 
 raw/paper.xml:
 	curl ${URL}?XML > $@
